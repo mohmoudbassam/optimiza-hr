@@ -73,5 +73,8 @@ Route::middleware('auth')->group(function () {
         Route::post('add_expenses_to_bill_action/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'add_expenses_to_bill_action'])->name('bills.add_expenses_to_bill_action');
 
     });
+    Route::prefix('Tasks')->group(function (){
+        Route::get('',[\App\Http\Controllers\CP\TasksController::class,'index'])->name('tasks.months');
+    });
 
 });

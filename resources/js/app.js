@@ -9,9 +9,6 @@ createInertiaApp({
        if(pages.loyout === undefined){
             pages.layout = layout
         }
-
-
-
         return pages[`./Pages/${name}.vue`]
     },
     setup({ el, App, props, plugin }) {

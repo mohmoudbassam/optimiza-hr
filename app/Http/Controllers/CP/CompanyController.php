@@ -62,6 +62,7 @@ class CompanyController extends Controller
         ]);
 
     }
+
     public function update(UpdateCompanyRequest $request){
         $company=Company::query()->findOrFail($request->id);
 

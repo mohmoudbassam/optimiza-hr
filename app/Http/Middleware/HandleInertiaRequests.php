@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
                 'email_verified_at'=>auth()->user()->email_verified_at,
                 'created_at'=>auth()->user()->created_at,
                 'updated_at'=>auth()->user()->updated_at,
+                'is_admin'=>auth()->user()->is_admin,
             ]:null,
             'flash'=>[
                 'error_message'=>function () use ($request) {
@@ -52,9 +53,7 @@ class HandleInertiaRequests extends Middleware
                 'success_message'=>function () use ($request) {
                     return $request->session()->get('success_message');
                 },
-
             ],
-
         ]);
     }
 }
