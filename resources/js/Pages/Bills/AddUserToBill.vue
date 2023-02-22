@@ -113,7 +113,7 @@ export default {
     methods: {
         onChangeUser() {
             axios.get(route('bills.get_user_tasks',{user_id:this.user_id,bill_id:this.bill.id })).then(response => {
-                console.log(response.data)
+
                 this.tasks = response.data.tasks;
             });
             this.user = this.users.find(user => user.id === this.user_id);

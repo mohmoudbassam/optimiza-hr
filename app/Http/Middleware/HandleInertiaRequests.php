@@ -45,6 +45,8 @@ class HandleInertiaRequests extends Middleware
                 'created_at'=>auth()->user()->created_at,
                 'updated_at'=>auth()->user()->updated_at,
                 'is_admin'=>auth()->user()->is_admin,
+                'monthly_working_hours'=>auth()->user()->monthly_working_hours,
+                'salary'=>auth()->user()->salary,
             ]:null,
             'flash'=>[
                 'error_message'=>function () use ($request) {

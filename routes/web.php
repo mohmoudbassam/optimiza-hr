@@ -75,6 +75,8 @@ Route::middleware('auth')->group(function () {
     });
     Route::prefix('Tasks')->group(function (){
         Route::get('',[\App\Http\Controllers\CP\TasksController::class,'index'])->name('tasks.months');
+        Route::get('my-tasks/{bill}',[\App\Http\Controllers\CP\TasksController::class,'my_tasks'])->name('tasks.my_tasks');
+        Route::post('store_tasks',[\App\Http\Controllers\CP\TasksController::class,'store_tasks'])->name('tasks.store_tasks');
     });
 
 });
