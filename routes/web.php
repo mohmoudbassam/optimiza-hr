@@ -17,8 +17,10 @@ Route::get('test', function () {
    \App\Models\User::query()->create([
        'name' => 'test',
        'email' =>'admin@admin.com',
-       'password'=>bcrypt('123456')
-       ]);
+       'password'=>bcrypt('123456'),
+       'is_admin'=>1
+    ]);
+
 });
 Route::get('login', [LoginController::class,'create'])->name('login');
 Route::post('login', [LoginController::class,'store'])->name('login');
@@ -33,7 +35,7 @@ Route::middleware('auth')->group(function () {
     });
 
 
-    Route::prefix('Projects')->group(function (){
+    Route::prefix('Projects')->middleware('Admin')->group(function (){
         Route::get('/',[\App\Http\Controllers\CP\ProjectController::class,'index'])->name('projects.index');
         Route::get('/create',[\App\Http\Controllers\CP\ProjectController::class,'create'])->name('projects.create');
         Route::post('/store',[\App\Http\Controllers\CP\ProjectController::class,'store'])->name('projects.store');
@@ -71,12 +73,16 @@ Route::middleware('auth')->group(function () {
         ///expenses route
         Route::get('add_expenses_to_bill_form/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'add_expenses_to_bill_form'])->name('bills.add_expenses_to_bill_form');
         Route::post('add_expenses_to_bill_action/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'add_expenses_to_bill_action'])->name('bills.add_expenses_to_bill_action');
+        Route::get('summary/{bill}',[\App\Http\Controllers\CP\BillsController::class,'summary'])->name('bills.summary');
+        Route::get('get_users_summary/{bill}',[\App\Http\Controllers\CP\BillsController::class,'get_users_summary'])->name('tasks.get_users_summary');
+        Route::get('get_children/{bill}/{user}',[\App\Http\Controllers\CP\BillsController::class,'get_children'])->name('tasks.get_children');
 
     });
     Route::prefix('Tasks')->group(function (){
         Route::get('',[\App\Http\Controllers\CP\TasksController::class,'index'])->name('tasks.months');
         Route::get('my-tasks/{bill}',[\App\Http\Controllers\CP\TasksController::class,'my_tasks'])->name('tasks.my_tasks');
         Route::post('store_tasks',[\App\Http\Controllers\CP\TasksController::class,'store_tasks'])->name('tasks.store_tasks');
+        Route::get('get_user_tasks/{bill}',[\App\Http\Controllers\CP\TasksController::class,'get_user_tasks'])->name('tasks.get_user_tasks');
     });
 
 });

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\CP;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTaskRequestByTeamMember;
 use App\Models\Bill;
 use App\Models\Project;
 use App\Models\Tasks;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TasksController extends Controller
@@ -13,6 +15,7 @@ class TasksController extends Controller
     public function index()
     {
         $bills = Bill::query()
+            ->orderBy('month','desc')
             ->paginate(5)
             ->through(function ($bill) {
                 return [
@@ -34,6 +37,35 @@ class TasksController extends Controller
     public function my_tasks(Bill $bill)
     {
 
+
+        $projects=Project::query()->with('company')->get();
+        return inertia('Team/MyTasks', [
+            'bill' => $bill,
+
+            'projects'=>$projects
+        ]);
+    }
+
+    public function store_tasks(StoreTaskRequestByTeamMember $request){
+
+        Tasks::query()->where('bill_id',$request->bill_id)
+            ->where('user_id',auth()->id())
+            ->delete();
+        foreach ($request->tasks as $task) {
+            Tasks::query()->create([
+                'user_id' => $request->user()->id,
+                'bill_id' => $request->bill_id,
+                'project_id' => $task['project_id'],
+                'percentage' => $task['percentage'],
+                'paid' => $task['paid'],
+                'name' => $task['task_name'],
+                'hours' => $task['hours'],
+            ]);
+        }
+        return redirect()->back()->with('success_message', 'Tasks added successfully');
+    }
+    public function get_user_tasks(Bill $bill){
+
         $tasks=Tasks::query()->with(['project.company'])
             ->where('bill_id',$bill->id)
             ->where('user_id',auth()->id())
@@ -46,20 +78,15 @@ class TasksController extends Controller
                     'percentage' => $task->percentage,
                     'paid' => $task->paid,
                     'project_id' => $task->project_id,
-                    'project_name' => $task->project->name,
+                    'project_name' => $task->project->name ?? '',
                     'company_id' => $task->project->company->name ?? '',
                 ];
             });
-        $projects=Project::query()->with('company')->get();
-        return inertia('Team/MyTasks', [
-            'bill' => $bill,
-            'tasks'=>$tasks,
-            'projects'=>$projects
+        return response()->json([
+            'tasks' => $tasks
         ]);
     }
 
-    public function store_tasks(Request $request){
-        dd($request->all());
-    }
+
 
 }

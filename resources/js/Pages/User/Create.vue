@@ -203,7 +203,7 @@ export default {
 
 
         const handleFilePondInit = function (e) {
-          console.log(e);
+
         }
 
         return {

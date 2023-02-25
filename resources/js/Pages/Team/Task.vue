@@ -6,7 +6,10 @@
                     <span class="text-danger"></span></label>
                 <select class="form-control"  v-model="task.project_id" @change="onProjectChange">
                     <option v-for="project in projects" :value="project.id"> {{ project.name }}</option>
+
                 </select>
+                <span v-if="errors[`tasks.${task_id}.project_id`]" class="text-danger" >this filed is required</span>
+
             </div>
         </div>
         <div class="col-xl-2">
@@ -26,7 +29,6 @@
                     <label>Percentage %  <span class="text-danger">*</span></label>
                     <input disabled   type="number"    v-model="task.percentage"   class="form-control"  placeholder="Percentage"/>
                 </div>
-                <span v-if="errors[`tasks.${task_id}.percentage`]" class="text-danger" >{{errors[`tasks.${task_id}.percentage`]}}</span>
 
             </div>
         </div>
@@ -36,6 +38,8 @@
                 <div class="form-group">
                     <label>Hours   <span class="text-danger"></span></label>
                     <input @input="updateHours" min="1"   type="number"  v-model="task.hours"   class="form-control"  placeholder="Hours"/>
+                    <span v-if="errors[`tasks.${task_id}.hours`]" class="text-danger" >this filed is required</span>
+
                 </div>
             </div>
         </div>

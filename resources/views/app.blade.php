@@ -17,6 +17,8 @@
     <link href="{{url('/')}}/assets/css/pages/login/login-1.css" rel="stylesheet" type="text/css" />
     <!--end::Layout Themes-->
     <link rel="shortcut icon" href="{{url('/')}}/assets/media/logos/favicon.ico" />
+    <link  href="https://cdn.jsdelivr.net/npm/vuetify@3.1.5/dist/vuetify.min.css" />
+
     @routes
     @vite('resources/js/app.js')
     @inertiaHead

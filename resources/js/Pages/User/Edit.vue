@@ -175,7 +175,7 @@ export default {
 
         },
         handleFileUpload(response) {
-            console.log(JSON.parse(response).filename)
+
             this.user.image = JSON.parse(response).filename;
         },
         handleFilePondInit() {

@@ -29,7 +29,7 @@
             </li>
 
             <li class="nav-item mr-3" v-if="$page.props.user.is_admin==0">
-                <Link :href="route('tasks.months')" :class="{'active':$page.component=='Months'||$page.component==''||$page.component==''||$page.component=='Bills/AddExpensesToBill'||$page.component=='Bills/ShowBillTasks'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">My Tasks</Link>
+                <Link :href="route('tasks.months')" :class="{'active':$page.component=='Team/Months' || $page.component=='Team/MyTasks'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">My Tasks</Link>
             </li>
 
 
@@ -55,7 +55,7 @@ export default {
         user: Object
     },
     mounted() {
-        console.log(this.$page.props.user);
+
     }
 
 }

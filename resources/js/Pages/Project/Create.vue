@@ -102,7 +102,7 @@ export default {
             form.post(route("projects.store"), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    console.log("success");
+
                     form.reset("name", "description");
                     createToast("Project Created Successfully", {
                         type: "success",

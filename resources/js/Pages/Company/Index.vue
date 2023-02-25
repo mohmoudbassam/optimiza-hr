@@ -245,7 +245,7 @@ export default {
         }
     },
     mounted() {
-        console.log(route('companies.edit',{'id':5}))
+
     }
 }
 </script>

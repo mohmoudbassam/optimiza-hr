@@ -118,7 +118,7 @@ export default {
             })
         },
         deleteExpense(index){
-            console.log(index);
+
             this.expenses.splice(index,1)
         },
         submit(){

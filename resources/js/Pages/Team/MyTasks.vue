@@ -14,6 +14,7 @@
                 <!--end::Notice-->
                 <!--begin::Card-->
                 <div class="card card-custom">
+                    <Form @submit="submit">
                     <div class="card-body">
 
                             <div class="mb-7">
@@ -27,10 +28,10 @@
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="col-lg-3 col-xl-3">
-                                        <button :disabled="totalPercentage>100" v-if="salary != '' " type="button"
+                                        <button   type="button"
                                                 @click="addTask" class="btn btn-primary mr-2">Add Task
                                         </button>
-                                        <button :disabled="disableSubmit" @click="submit" type="submit"
+                                        <button :disabled="disableSubmit"  type="submit"
                                                 class="btn btn-primary mr-2">Submit
                                         </button>
                                     </div>
@@ -39,6 +40,7 @@
 
                         <span v-if="errors.percentage" class="text-danger" v-text="errors.percentage"></span>
                     </div>
+                    </Form>
                 </div>
             </div>
         </div>
@@ -48,23 +50,29 @@
 <script>
 import Layout from "../../Shared/Layout.vue";
 import Task from "./Task.vue";
-
+import {Form} from 'vee-validate';
+import {createToast} from "mosha-vue-toastify";
 import axios from "axios";
 export default {
     name: "MyTasks",
-    components: {Layout, Task},
+    components: {Layout, Task,Form},
     props:{
         bill: Object,
         errors: Object,
         projects: Array,
-        tasks: [],
+
     },
     data(){
       return {
           disableSubmit: true,
+          tasks: [],
       }
     },
     mounted() {
+        axios.get(route('tasks.get_user_tasks',{bill:this.bill.id })).then(response => {
+
+            this.tasks = response.data.tasks;
+        });
         this.updateHours();
     },
     methods: {
@@ -97,9 +105,18 @@ export default {
         submit() {
 
             this.$inertia.post(route('tasks.store_tasks'), {
-
                 tasks: this.tasks,
                 bill_id: this.bill.id,
+            },{
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: (page) => {
+                    createToast('Tasks added successfully', {
+                        type: "success",
+                        position: "top-right",
+                        timeout: 20000,
+                    });
+                },
             })
         },
 

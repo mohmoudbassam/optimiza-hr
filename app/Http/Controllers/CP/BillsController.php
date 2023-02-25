@@ -133,7 +133,7 @@ class BillsController extends Controller
             ->through(function ($task) {
                 return [
                     'id' => $task->id,
-                    'task_name' =>substr($task->name, 0, 20),
+                    'task_name' => substr($task->name, 0, 20),
                     'hours' => $task->hours,
                     'percentage' => $task->percentage,
                     'paid' => $task->paid,
@@ -163,7 +163,7 @@ class BillsController extends Controller
         ]);
     }
 
-    public function add_expenses_to_bill_action(AddExpensesToBillRequest $request,$bill_id)
+    public function add_expenses_to_bill_action(AddExpensesToBillRequest $request, $bill_id)
     {
         Expense::query()->where('bill_id', $bill_id)->delete();
         foreach ($request->expenses as $expense) {
@@ -175,6 +175,78 @@ class BillsController extends Controller
 
         }
         return redirect()->route('bills.index')->with('success_message', 'Expenses added to bill successfully');
+
+    }
+
+    public function summary(Bill $bill)
+    {
+
+        return inertia('Bills/Summary', [
+            'bill' => $bill,
+        ]);
+    }
+
+    public function get_users_summary(Request $request, Bill $bill)
+    {
+        $tasks = Tasks::query()
+            ->with(['user'])
+            ->select('user_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->where('bill_id', $bill->id)
+            ->groupBy('user_id')
+            ->get();
+
+        $taskAfterMap = $tasks->map(function ($task) {
+            return [
+                'key' => $task->user->id,
+                'data' => collect([
+                    'user' => $task->user->name,
+                    'hours' => $task->hours,
+                    'percentage' => $task->percentage,
+                    'paid' => $task->paid,
+                ]),
+                'children' => [
+                    []
+                ]
+            ];
+        });
+        return response()->json(
+            $taskAfterMap
+        );
+
+    }
+    public function get_children(Bill $bill ,User $user){
+        $tasks=Tasks::query()
+            ->select('project_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->with(['user','project','project'])
+            ->where('bill_id',$bill->id)
+            ->where('user_id',$user->id)
+            ->groupBy('project_id')
+            ->get();
+
+        $taskAfterMap = $tasks->map(function ($task) use($user) {
+            return [
+                'key' => $user->id ??'',
+                'styleClass'=>'table-primary',
+                'data' => collect([
+
+                    'user' => $user->name,
+                    'hours' => $task->hours,
+                    'percentage' => $task->percentage,
+                    'paid' => $task->paid,
+                    'project' => $task->project->name,
+                ]),
+            ];
+        });
+
+        return response()->json(
+            $taskAfterMap
+        );
 
     }
 }
