@@ -22,10 +22,10 @@
             <!--end::Item-->
             <!--begin::Item-->
             <li class="nav-item mr-3" v-if="$page.props.user.is_admin">
-                <Link :href="route('companies.index')" :class="{'active':$page.component=='Company/Index'||$page.component=='Company/Edit'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Companies</Link>
+                <Link :href="route('companies.index')" :class="{'active':$page.component=='Company/Index'||$page.component=='Company/Edit'||$page.component=='Company/Create'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Companies</Link>
             </li>
             <li class="nav-item mr-3" v-if="$page.props.user.is_admin">
-                <Link :href="route('bills.index')" :class="{'active':$page.component=='Bills/Index'||$page.component=='Bills/Create'||$page.component=='Bills/AddUserToBill'||$page.component=='Bills/AddExpensesToBill'||$page.component=='Bills/ShowBillTasks'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Bills</Link>
+                <Link :href="route('bills.index')" :class="{'active':$page.component=='Bills/Index'||$page.component=='Bills/Create'||$page.component=='Bills/AddUserToBill'||$page.component=='Bills/AddExpensesToBill'||$page.component=='Bills/ShowBillTasks'||$page.component=='Bills/Summary'||$page.component=='Bills/showBillTasks'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Bills</Link>
             </li>
 
             <li class="nav-item mr-3" v-if="$page.props.user.is_admin==0">
@@ -55,8 +55,9 @@ export default {
         user: Object
     },
     mounted() {
-
+        console.log(this.$page.props.user)
     }
+
 
 }
 </script>

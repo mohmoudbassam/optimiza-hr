@@ -30,15 +30,15 @@
 
             </div>
         </div>
-        <div class="col-xl-1">
-            <div class="form-group">
+<!--        <div class="col-xl-1">-->
+<!--            <div class="form-group">-->
 
-                <div class="form-group">
-                    <label>Hours   <span class="text-danger"></span></label>
-                    <input disabled   type="number"  v-model="task.hours"   class="form-control"  placeholder="Hours"/>
-                </div>
-            </div>
-        </div>
+<!--                <div class="form-group">-->
+<!--                    <label>Hours   <span class="text-danger"></span></label>-->
+<!--                    <input disabled   type="number"  v-model="task.hours"   class="form-control"  placeholder="Hours"/>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="col-xl-2">
             <div class="form-group">
 
@@ -59,6 +59,17 @@
                 </div>
             </div>
         </div>
+        <div class="col-xl-2">
+            <div class="form-group">
+
+                <div class="form-group">
+                    <label>date  <span class="text-danger">*</span></label>
+                    <Calendar v-model="date" selectionMode="range" :manualInput="false"  dateFormat="mm/dd/yy" />
+
+                </div>
+            </div>
+        </div>
+
         <div class="col-lg-1 col-xl-1">
             <span @click="deleteTask"><i class="fa fa-trash" style='color: red ;cursor: pointer' ></i></span>
         </div>
@@ -69,11 +80,13 @@
 <script>
 import { Form, Field } from 'vee-validate';
 import {createToast} from "mosha-vue-toastify";
+import Calendar from "primevue/calendar";
 export default {
     name: "Task",
     components: {
         Form,
-        Field
+        Field,
+        Calendar
     },
     props: {
         user: Object,
@@ -81,12 +94,16 @@ export default {
         task: Object,
         task_id: Number,
         errors: Object,
+
     },
     watch: {
      user: function (newVal, oldVal) {
          this.task.hours= (this.task.percentage /100)*this.user.monthly_working_hours;
          this.task.paid= (this.task.percentage /100)*this.user.salary;
      },
+        "date": function () {
+           this.task.date = this.date
+        },
     },
     data() {
         return {
@@ -96,9 +113,16 @@ export default {
             company_id: this.task.company_id,
             hours: this.task.hours,
             paid: this.task.paid,
+            date: [],
         }
     },
-
+    created() {
+        if(this.task.from_date){
+            this.date[0] =new Date (this.task.from_date)
+            this.date[1] = new Date (this.task.to_date)
+        }
+        this.task.date=this.date
+    },
     methods: {
         onProjectChange() {
             this.task.company_id = this.projects.find(project => project.id === this.task.project_id).company.name;

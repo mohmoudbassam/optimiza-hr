@@ -149,7 +149,8 @@ export default {
     },
     props: {
         user: Object,
-        errors: Object
+        errors: Object,
+        editable_user: Object
     },
     data() {
         return {
@@ -179,11 +180,13 @@ export default {
             this.user.image = JSON.parse(response).filename;
         },
         handleFilePondInit() {
-            if(this.user.profile_photo_url){
+
+            console.log(this.user.profile_photo_url)
+            if(this.editable_user.profile_photo_url){
                 this.myFiles =  [
                     {
                         // the server file reference
-                        source: this.user.profile_photo_url,
+                        source: this.editable_user.profile_photo_url,
 
                         // set type to local to indicate an already uploaded file
                         options: {
@@ -198,7 +201,7 @@ export default {
 
                             // pass poster property
                             metadata: {
-                                poster: this.user.profile_photo_url,
+                                poster: this.editable_user.profile_photo_url,
                             },
                         },
                     },
@@ -235,6 +238,10 @@ export default {
                 },
             });
         },
+
+        mounted() {
+            console.log('sdffds')
+        }
     },
 }
 </script>

@@ -16,9 +16,8 @@ class AddBillToUserRequest extends FormRequest
                 'required',
                 'array',
                 'min:1',
-
             ],
-            'tasks.*.percentage'=>['required'],
+        //    'tasks.*.percentage'=>['required'],
 
         ];
     }

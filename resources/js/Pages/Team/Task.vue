@@ -47,21 +47,13 @@
             <div class="form-group">
 
                 <div class="form-group">
-                    <label>Company  <span class="text-danger">*</span></label>
-                    <input type="text" disabled v-model="task.company_id"   class="form-control"  placeholder="Company"/>
+                    <label>date  <span class="text-danger">*</span></label>
+                    <Calendar v-model="date" selectionMode="range" :manualInput="false"  dateFormat="mm/dd/yy" />
 
                 </div>
             </div>
         </div>
-        <div class="col-xl-2">
-            <div class="form-group">
 
-                <div class="form-group">
-                    <label>Paid  <span class="text-danger">*</span></label>
-                    <input type="text" disabled v-model="task.paid"   class="form-control"  placeholder="Paid"/>
-                </div>
-            </div>
-        </div>
         <div class="col-lg-1 col-xl-1">
             <span @click="deleteTask"><i class="fa fa-trash" style='color: red ;cursor: pointer' ></i></span>
         </div>
@@ -72,11 +64,13 @@
 <script>
 import { Form, Field } from 'vee-validate';
 import {createToast} from "mosha-vue-toastify";
+import Calendar from "primevue/calendar";
 export default {
     name: "Task",
     components: {
         Form,
-        Field
+        Field,
+        Calendar
     },
     props: {
         user: Object,
@@ -86,13 +80,13 @@ export default {
         errors: Object,
     },
 
-    mounted() {
-
-    },
     watch:{
         'task.project_id':function (val){
             this.task.company_id =this.projects.find(project => project.id == val).company.name;
-        }
+        },
+        "date": function () {
+            this.task.date = this.date
+        },
     },
     methods:{
         updateHours(){
@@ -103,7 +97,19 @@ export default {
         deleteTask(){
             this.$emit('deleteTask',this.task_id);
         }
-    }
+    },
+    data() {
+        return {
+            date: [],
+        }
+    },
+    created() {
+        if(this.task.from_date){
+            this.date[0] =new Date (this.task.from_date)
+            this.date[1] = new Date (this.task.to_date)
+        }
+        this.task.date=this.date
+    },
 
 
 }

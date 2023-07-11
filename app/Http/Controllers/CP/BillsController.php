@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\CP;
 
+use App\Exports\SummaryExport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddBillToUserRequest;
 use App\Http\Requests\AddExpensesToBillRequest;
@@ -11,8 +12,10 @@ use App\Models\Expense;
 use App\Models\Project;
 use App\Models\Tasks;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BillsController extends Controller
 {
@@ -74,7 +77,6 @@ class BillsController extends Controller
             'bill' => $bill,
             'users' => $users,
             'projects' => $projects,
-
         ]);
     }
 
@@ -82,6 +84,9 @@ class BillsController extends Controller
     {
         Tasks::query()->where('bill_id', $id)->where('user_id', $request->user_id)->delete();
         foreach ($request->tasks as $task) {
+            $from_date=isset($task['date'][0])  ? Carbon::parse($task['date'][0])->toDateString():null;
+            $to_date= isset($task['date'][1]) ? Carbon::parse($task['date'][1])->toDateString():null;
+
             Tasks::query()->create([
                 'user_id' => $request->user_id,
                 'bill_id' => $id,
@@ -90,6 +95,8 @@ class BillsController extends Controller
                 'paid' => $task['paid'],
                 'name' => $task['task_name'],
                 'hours' => $task['hours'],
+                'from_date' => $from_date,
+                'to_date' => $to_date,
             ]);
         }
         return redirect()->route('bills.index')->with('success_message', 'User added to bill successfully');
@@ -97,6 +104,7 @@ class BillsController extends Controller
 
     public function get_user_tasks($user_id, $bill_id)
     {
+
         $tasks = Tasks::query()->where('user_id', $user_id)->where('bill_id', $bill_id)->get();
 
         $tasks = $tasks->map(function ($task) {
@@ -110,6 +118,8 @@ class BillsController extends Controller
                 'project_id' => $task->project_id,
                 'project_name' => $task->project->name,
                 'company_id' => $task->project->company->name ?? '',
+                'from_date' => $task->from_date ?? '',
+                'to_date' => $task->to_date ?? '',
             ];
         });
         return response()->json([
@@ -248,5 +258,33 @@ class BillsController extends Controller
             $taskAfterMap
         );
 
+    }
+
+    public function summary_export(Request $request,Bill $bill)
+    {
+        $tasks=Tasks::query()
+            ->select('project_id','user_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->with(['user','project','project'])
+            ->where('bill_id',$bill->id)
+            ->groupBy('project_id','user_id')
+            ->get();
+
+        $taskAfterMap = $tasks->map(function ($task)  {
+
+            return [
+                'data' => collect([
+                    'user' => $task->user->name ?? '',
+                    'hours' => $task->hours ?? '',
+                    'percentage' => $task->percentage   ?? '',
+                    'paid' => $task->paid   ?? '',
+                    'project' => $task->project->name ?? '',
+                    'company' => $task->project->company->name ?? '',
+                ]),
+            ];
+        });
+        return Excel::download(new SummaryExport($taskAfterMap), 'summary.xlsx');
     }
 }

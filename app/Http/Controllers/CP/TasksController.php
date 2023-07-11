@@ -8,6 +8,7 @@ use App\Models\Bill;
 use App\Models\Project;
 use App\Models\Tasks;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TasksController extends Controller
@@ -41,7 +42,6 @@ class TasksController extends Controller
         $projects=Project::query()->with('company')->get();
         return inertia('Team/MyTasks', [
             'bill' => $bill,
-
             'projects'=>$projects
         ]);
     }
@@ -52,6 +52,10 @@ class TasksController extends Controller
             ->where('user_id',auth()->id())
             ->delete();
         foreach ($request->tasks as $task) {
+
+            $from_date=isset($task['date'][0])  ? Carbon::parse($task['date'][0])->toDateString():null;
+            $to_date= isset($task['date'][1]) ? Carbon::parse($task['date'][1])->toDateString():null;
+
             Tasks::query()->create([
                 'user_id' => $request->user()->id,
                 'bill_id' => $request->bill_id,
@@ -60,6 +64,8 @@ class TasksController extends Controller
                 'paid' => $task['paid'],
                 'name' => $task['task_name'],
                 'hours' => $task['hours'],
+                'from_date' => $from_date,
+                'to_date' => $to_date,
             ]);
         }
         return redirect()->back()->with('success_message', 'Tasks added successfully');
@@ -80,6 +86,8 @@ class TasksController extends Controller
                     'project_id' => $task->project_id,
                     'project_name' => $task->project->name ?? '',
                     'company_id' => $task->project->company->name ?? '',
+                    'from_date' =>$task->from_date,
+                    'to_date' =>$task->to_date,
                 ];
             });
         return response()->json([

@@ -29,8 +29,7 @@ class UserController extends Controller
                     'profile_photo_path'=>$user->profile_photo_path,
                     'monthly_working_hours'=>$user->monthly_working_hours,
                 ];
-            })
-            ->withQueryString();
+            })->withQueryString();
 
         return inertia('User/Index',[
             'users'=>$users,
@@ -60,9 +59,10 @@ class UserController extends Controller
 
     public function edit(Request $request)
     {
+
         $user=User::query()->findOrFail($request->id);
         return inertia('User/Edit',[
-            'user'=>$user->only('id','name','email','salary','image','dob','profile_photo_url','monthly_working_hours'),
+            'editable_user'=>$user->only('id','name','email','salary','image','dob','profile_photo_url','monthly_working_hours'),
         ]);
     }
     public function update(UpdateUserRequest $request)
@@ -89,8 +89,6 @@ class UserController extends Controller
     {
         if($request->file('image'))
             return response()->json(['filename'=>$request->file('image')->store('image', 'public')]);
-
     }
-
 
 }

@@ -70,7 +70,6 @@ export default {
     },
     mounted() {
         axios.get(route('tasks.get_user_tasks',{bill:this.bill.id })).then(response => {
-
             this.tasks = response.data.tasks;
         });
         this.updateHours();
@@ -86,6 +85,7 @@ export default {
                 project_id: '',
                 project_name: '',
                 company_id: this.bill.id,
+                date:[]
             })
         },
         getMonthYear(){
