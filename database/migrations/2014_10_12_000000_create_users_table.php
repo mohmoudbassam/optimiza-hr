@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->integer('monthly_working_hours')->default(160);
-            $table->text('profile_photo_path')->default(160);
+            $table->text('profile_photo_path')->nullable();
             $table->boolean('is_admin')->default(0);
             $table->rememberToken();
             $table->timestamps();
