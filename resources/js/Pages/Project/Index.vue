@@ -112,7 +112,7 @@
                             													</g>
                             												</svg>
 
-                            											</span>New User</Link>
+                            											</span>New Project</Link>
 
                         </div>
                     </div>
