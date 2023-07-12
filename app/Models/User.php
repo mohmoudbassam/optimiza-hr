@@ -26,6 +26,8 @@ class User extends Authenticatable
         'dob',
         'profile_photo_path',
         'monthly_working_hours',
+        'is_admin',
+        'profile_photo_path'
     ];
 
     /**
