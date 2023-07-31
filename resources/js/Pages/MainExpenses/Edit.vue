@@ -43,8 +43,8 @@
                         <div class="card-body">
 
                             <div class="form-group">
-                                <label>Exp Name  <span class="text-danger">*</span></label>
-                                <input type="text" v-model="expenses.name"   class="form-control"  placeholder="Project Name "/>
+                                <label>Expenses Name  <span class="text-danger">*</span></label>
+                                <input type="text" v-model="expenses.name"   class="form-control"  placeholder="Expenses Name "/>
                                 <span v-if="errors.name" class="text-danger" v-text="errors.name"></span>
                             </div>
 

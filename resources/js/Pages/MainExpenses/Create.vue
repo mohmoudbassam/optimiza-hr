@@ -41,7 +41,7 @@
                     <form @submit.prevent="submit">
                         <div class="card-body">
                             <div class="form-group">
-                                <label>Project Name  <span class="text-danger">*</span></label>
+                                <label>Expenses Name  <span class="text-danger">*</span></label>
                                 <input type="text" v-model="form.name"   class="form-control"  placeholder="Project Name "/>
                                 <span v-if="errors.name" class="text-danger" v-text="errors.name"></span>
                             </div>
