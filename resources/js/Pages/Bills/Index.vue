@@ -289,6 +289,7 @@ import {createToast} from "mosha-vue-toastify";
 import 'vuetify/styles'
 import BtnVutify from "../../Shared/BtnVutify.vue";
 import Button from 'primevue/button';
+import axios from "axios";
 
 export default {
     name: "Index",
@@ -299,7 +300,11 @@ export default {
     },
     methods: {
         openClose(bill) {
-            this.$inertia.post(route('bills.change_bill_status', {bill: bill.id}));
+            axios.post(route('bills.change_bill_status', {bill: bill.id}))
+                .then(res => {
+                    console.log(res)
+                })
+           // this.$inertia.post(route('bills.change_bill_status', {bill: bill.id}));
             this.$inertia.reload({preserveState: true});
         }
     },
