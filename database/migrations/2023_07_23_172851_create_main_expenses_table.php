@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('bills', function (Blueprint $table) {
+        Schema::create('main_expenses', function (Blueprint $table) {
             $table->id();
-            $table->integer('month')->nullable();
-            $table->integer('year')->nullable();
-            $table->integer('amount')->nullable();
-            $table->integer('status')->nullable();
-            $table->integer('is_closed')->default(0);
+            $table->string('name')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bills');
+        Schema::dropIfExists('expenses');
     }
 };

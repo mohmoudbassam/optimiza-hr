@@ -63,25 +63,26 @@
                             <div class="mb-7">
                                 <div v-for="(task,index) in tasks">
                                     <Task :user="user" @deleteTask="deleteTask" :errors="errors" :key="index"
-                                          :task_id="index" @updatePercentage="updatePercentage" :task="task"
+                                          :task_id="index" @updateHours="updateHours"
+                                          @updatePercentage="updatePercentage" :task="task"
                                           :projects="projects"></Task>
                                 </div>
                             </div>
-
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="col-lg-3 col-xl-3">
-                                        <button :disabled="totalPercentage>100" v-if="salary != '' " type="button"
-                                                @click="addTask" class="btn btn-primary mr-2">Add Task
+                                        <button :disabled="totalPercentage > 100" v-if="salary != '' " type="button"
+                                                @click="addTask" class="btn btn-primary mr-2">Add
                                         </button>
-                                        <button :disabled="totalPercentage>100 || tasks.length < 0" type="submit"
+                                        <button :disabled="totalPercentage > 100 || tasks.length < 0" type="submit"
                                                 class="btn btn-primary mr-2">Submit
                                         </button>
                                     </div>
                                 </div>
                             </div>
                         </Form>
-                        <span v-if="errors.percentage" class="text-danger" v-text="errors.percentage"></span>
+                        <span v-if="errors.percentage" class="text-danger ma-lg-10" v-text="errors.percentage"></span>
+                        <span v-if="errors.hours" class="text-danger" v-text="errors.hours"></span>
                     </div>
                 </div>
             </div>
@@ -96,6 +97,7 @@ import Task from "./Task.vue";
 import {Form} from 'vee-validate';
 import {createToast} from "mosha-vue-toastify";
 import axios from "axios";
+
 export default {
     name: "AddUserToBill",
     components: {
@@ -112,8 +114,7 @@ export default {
     },
     methods: {
         onChangeUser() {
-            axios.get(route('bills.get_user_tasks',{user_id:this.user_id,bill_id:this.bill.id })).then(response => {
-
+            axios.get(route('bills.get_user_summary', {user: this.user_id, bill: this.bill.id})).then(response => {
                 this.tasks = response.data.tasks;
             });
             this.user = this.users.find(user => user.id === this.user_id);
@@ -126,8 +127,7 @@ export default {
             this.updatePercentage();
         },
         submit() {
-
-            this.$inertia.post(route('bills.add_user_to_bill_action', {id: this.bill.id}), {
+            this.$inertia.post(route('bills.store_summary', {bill: this.bill.id}), {
                 user_id: this.user_id,
                 tasks: this.tasks,
             })
@@ -135,7 +135,6 @@ export default {
 
 
         addTask() {
-
             this.tasks.push({
                 percentage: '',
                 project_id: '',
@@ -145,15 +144,22 @@ export default {
             })
         },
         updatePercentage() {
-
             let total = 0;
-
             total = this.tasks.reduce((total, task) => {
                 return total + parseInt(task.percentage);
             }, 0);
 
             this.totalPercentage = total;
-        }
+        },
+        updateHours() {
+            let total = 0;
+
+            total = this.tasks.reduce((total, task) => {
+                return total + parseInt(task.hours);
+            }, 0);
+
+            this.totalHours = total;
+        },
     },
     watch: {
         totalPercentage() {
@@ -165,6 +171,17 @@ export default {
                 this.disableSubmit = false;
 
                 this.errors.percentage = '';
+            }
+        },
+        totalHours() {
+
+            if (this.totalHours > this.monthly_working_hours) {
+                this.errors.hours = 'Hours Must Be Less Than Monthly Working Hours';
+                this.disableSubmit = true;
+            } else {
+                this.disableSubmit = false;
+
+                this.errors.hours = '';
             }
         },
 
@@ -186,6 +203,7 @@ export default {
             monthly_working_hours: '',
             tasks: [],
             totalPercentage: 0,
+            totalHours: 0,
             disableSubmit: true,
             user: {},
         }

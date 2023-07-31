@@ -31,7 +31,7 @@
                                         <button   type="button"
                                                 @click="addTask" class="btn btn-primary mr-2">Add Task
                                         </button>
-                                        <button :disabled="disableSubmit"  type="submit"
+                                        <button :disabled="disableSubmit || bill.is_closed"  type="submit"
                                                 class="btn btn-primary mr-2">Submit
                                         </button>
                                     </div>

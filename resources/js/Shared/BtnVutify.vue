@@ -14,16 +14,13 @@
                     v-for="(item, index) in items"
                     :key="index"
                     :value="index"
-                    @click="visit(item.url)"
+                    @click="visit(item.url,item.bill)"
+                    :bill="item.bill"
                 >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
-
                 </v-list-item>
             </v-list>
         </v-menu>
-
-
-
     </div>
 </template>
 <script>
@@ -37,11 +34,16 @@ export default {
     },
     components: {Link},
     methods: {
-        visit(url) {
-
+        visit(url,bill) {
+            if (url.includes('change_bill_status')) {
+                this.openClose(bill);
+                return false;
+            }
             this.$inertia.visit(url);
-        }
+        },
+        openClose(bill) {
+            this.$emit('openClose',bill);
+        },
     }
-
 }
 </script>

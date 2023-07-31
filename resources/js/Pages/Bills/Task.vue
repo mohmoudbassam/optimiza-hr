@@ -9,33 +9,13 @@
                 </select>
             </div>
         </div>
-        <div class="col-xl-2">
-            <div class="form-group">
-
-                <div class="form-group">
-                    <label>Task Name  <span class="text-danger">*</span></label>
-                    <input type="text" v-model="task.task_name"   class="form-control"  placeholder="Task Name"/>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2">
-            <div class="form-group">
-
-                <div class="form-group">
-                    <label>Percentage %  <span class="text-danger">*</span></label>
-                    <input   type="number"  @input="updatePercentage"  v-model="task.percentage"   class="form-control"  placeholder="Percentage"/>
-                </div>
-                <span v-if="errors[`tasks.${task_id}.percentage`]" class="text-danger" >{{errors[`tasks.${task_id}.percentage`]}}</span>
-
-            </div>
-        </div>
-<!--        <div class="col-xl-1">-->
+<!--        <div class="col-xl-2">-->
 <!--            <div class="form-group">-->
 
 <!--                <div class="form-group">-->
-<!--                    <label>Hours   <span class="text-danger"></span></label>-->
-<!--                    <input disabled   type="number"  v-model="task.hours"   class="form-control"  placeholder="Hours"/>-->
+<!--                    <label>Task Name  <span class="text-danger">*</span></label>-->
+<!--                    <input type="text" v-model="task.task_name"   class="form-control"  placeholder="Task Name"/>-->
+
 <!--                </div>-->
 <!--            </div>-->
 <!--        </div>-->
@@ -43,28 +23,38 @@
             <div class="form-group">
 
                 <div class="form-group">
-                    <label>Company  <span class="text-danger">*</span></label>
-                    <input type="text" disabled v-model="task.company_id"   class="form-control"  placeholder="Company"/>
+                    <label>Percentage %  <span class="text-danger">*</span></label>
+                    <input   type="number"  @input="updatePercentage"  v-model.number="task.percentage"   class="form-control"  placeholder="Percentage"/>
+                </div>
+                <span v-if="errors[`tasks.${task_id}.percentage`]" class="text-danger" >{{errors[`tasks.${task_id}.percentage`]}}</span>
 
+            </div>
+        </div>
+        <div class="col-xl-1">
+            <div class="form-group">
+
+                <div class="form-group">
+                    <label>Hours   <span class="text-danger"></span></label>
+                    <input    type="number" @input="updateHours"  v-model.number="task.hours"   class="form-control"  placeholder="Hours"/>
                 </div>
             </div>
         </div>
+<!--        <div class="col-xl-2">-->
+<!--            <div class="form-group">-->
+
+<!--                <div class="form-group">-->
+<!--                    <label>Company  <span class="text-danger">*</span></label>-->
+<!--                    <input type="text" disabled v-model="task.company_id"   class="form-control"  placeholder="Company"/>-->
+
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
         <div class="col-xl-2">
             <div class="form-group">
 
                 <div class="form-group">
                     <label>Paid  <span class="text-danger">*</span></label>
                     <input type="text" disabled v-model="task.paid"   class="form-control"  placeholder="Company"/>
-
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-2">
-            <div class="form-group">
-
-                <div class="form-group">
-                    <label>date  <span class="text-danger">*</span></label>
-                    <Calendar v-model="date" selectionMode="range" :manualInput="false"  dateFormat="mm/dd/yy" />
 
                 </div>
             </div>
@@ -94,12 +84,11 @@ export default {
         task: Object,
         task_id: Number,
         errors: Object,
-
     },
     watch: {
      user: function (newVal, oldVal) {
-         this.task.hours= (this.task.percentage /100)*this.user.monthly_working_hours;
-         this.task.paid= (this.task.percentage /100)*this.user.salary;
+         this.task.hours= ((this.task.percentage /100)*this.user.monthly_working_hours).toFixed(2);
+         this.task.paid= ((this.task.percentage /100)*this.user.salary).toFixed(2);
      },
         "date": function () {
            this.task.date = this.date
@@ -131,9 +120,14 @@ export default {
             this.$emit('deleteTask', this.task_id);
         },
         updatePercentage(e) {
-            this.task.hours= (this.task.percentage /100)*this.user.monthly_working_hours;
-            this.task.paid= (this.task.percentage /100)*this.user.salary;
+            this.task.hours= ((this.task.percentage /100)*this.user.monthly_working_hours).toFixed(2);
+            this.task.paid= ((this.task.percentage /100)*this.user.salary).toFixed(2);
             this.$emit('updatePercentage');
+        },
+        updateHours(e) {
+            this.task.percentage= ((this.task.hours /this.user.monthly_working_hours)*100).toFixed(2);
+            this.task.paid= ((this.task.percentage /100)*this.user.salary).toFixed(2);
+            this.$emit('updateHours');
         },
     }
 }

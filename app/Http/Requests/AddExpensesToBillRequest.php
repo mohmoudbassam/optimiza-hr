@@ -9,16 +9,16 @@ class AddExpensesToBillRequest extends FormRequest
 
     public function rules()
     {
+      // dd($this->all());
         return [
-
             'expenses'=>[
                 'required',
                 'array',
                 'min:1',
-            ],
-            'expenses.*.amount'=>['required'],
-            'expenses.*.description'=>['required'],
 
+            ],
+            'expenses.*.main_expenses_id'=>['required','exists:main_expenses,id'],
+            'expenses.*.amount'=>['required'],
         ];
     }
 }

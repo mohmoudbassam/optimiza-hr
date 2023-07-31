@@ -61,7 +61,7 @@
                     <div class="card-body">
                             <div class="mb-7">
                                 <div v-for="(expense,index) in expenses">
-                                    <Expense :expense_id="index" :expense="expense" @deleteExpense="deleteExpense" :errors="errors" :key="index"></Expense>
+                                    <Expense :expense_id="index" :MainExpenses="main_expenses" :expense="expense" @deleteExpense="deleteExpense" :errors="errors" :key="index"></Expense>
                                 </div>
                             </div>
 
@@ -100,6 +100,7 @@ export default {
     props: {
         errors:Object,
         bill:Object,
+        main_expenses:Object,
 
     },
     data(){
@@ -113,12 +114,11 @@ export default {
     methods: {
         addExpense(){
             this.expenses.push({
-                description: '',
                 amount: '',
+                'main_expense_id': '',
             })
         },
         deleteExpense(index){
-
             this.expenses.splice(index,1)
         },
         submit(){

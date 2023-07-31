@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CP\MainExpensesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +19,7 @@ Route::get('test', function () {
        'name' => 'test',
        'email' =>'admin@admin.com',
        'password'=>bcrypt('123456'),
-       'is_admin'=>1
+       'is_admin'=>1,
     ]);
 
 });
@@ -43,7 +44,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{project}',[\App\Http\Controllers\CP\ProjectController::class,'update'])->name('projects.update');
         Route::get('/delete/{id}',[\App\Http\Controllers\CP\ProjectController::class,'destroy'])->name('projects.destroy');
     });
-    Route::prefix('Users')->group(function (){
+    Route::prefix('Users')->middleware('Admin')->group(function (){
         Route::get('',[\App\Http\Controllers\CP\UserController::class,'index'])->name('users.index');
         Route::get('create',[\App\Http\Controllers\CP\UserController::class,'create'])->name('users.create');
         Route::post('upload_image',[\App\Http\Controllers\CP\UserController::class,'upload_image'])->name('users.upload_image');
@@ -52,7 +53,7 @@ Route::middleware('auth')->group(function () {
         Route::post('update',[\App\Http\Controllers\CP\UserController::class,'update'])->name('users.update');
         Route::post('destroy',[\App\Http\Controllers\CP\UserController::class,'destroy'])->name('users.destroy');
     });
-    Route::prefix('Companies')->group(function (){
+    Route::prefix('Companies')->middleware('Admin')->group(function (){
         Route::get('',[\App\Http\Controllers\CP\CompanyController::class,'index'])->name('companies.index');
         Route::get('create',[\App\Http\Controllers\CP\CompanyController::class,'create'])->name('companies.create');
         Route::post('store',[\App\Http\Controllers\CP\CompanyController::class,'store'])->name('companies.store');
@@ -60,15 +61,18 @@ Route::middleware('auth')->group(function () {
         Route::post('update',[\App\Http\Controllers\CP\CompanyController::class,'update'])->name('companies.update');
         Route::post('destroy',[\App\Http\Controllers\CP\CompanyController::class,'destroy'])->name('companies.destroy');
     });
-    Route::prefix('Bills')->group(function (){
+    Route::prefix('Bills')->middleware('Admin')->group(function (){
         Route::get('',[\App\Http\Controllers\CP\BillsController::class,'index'])->name('bills.index');
         Route::get('create',[\App\Http\Controllers\CP\BillsController::class,'create'])->name('bills.create');
         Route::post('store',[\App\Http\Controllers\CP\BillsController::class,'store'])->name('bills.store');
+        Route::post('change_bill_status/{bill}',[\App\Http\Controllers\CP\BillsController::class,'change_bill_status'])->name('bills.change_bill_status');
         /// bill user route
         Route::get('add_user_to_bill_form/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'add_user_to_bill_form'])->name('bills.add_user_to_bill_form');
         Route::post('add_user_to_bill_action/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'add_user_to_bill_action'])->name('bills.add_user_to_bill_action');
         Route::get('get_user_tasks/{user_id}/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'get_user_tasks'])->name('bills.get_user_tasks');
         Route::get('show_bill_tasks/{bill}',[\App\Http\Controllers\CP\BillsController::class,'show_bill_tasks'])->name('bills.show_bill_tasks');
+        Route::get('get_user_summary/user/{user}/bill/{bill}',[\App\Http\Controllers\CP\BillsController::class,'get_user_summary'])->name('bills.get_user_summary');
+        Route::post('store_summary/{bill}',[\App\Http\Controllers\CP\BillsController::class,'store_summary'])->name('bills.store_summary');
 
         ///expenses route
         Route::get('add_expenses_to_bill_form/{bill_id}',[\App\Http\Controllers\CP\BillsController::class,'add_expenses_to_bill_form'])->name('bills.add_expenses_to_bill_form');
@@ -84,6 +88,13 @@ Route::middleware('auth')->group(function () {
         Route::get('my-tasks/{bill}',[\App\Http\Controllers\CP\TasksController::class,'my_tasks'])->name('tasks.my_tasks');
         Route::post('store_tasks',[\App\Http\Controllers\CP\TasksController::class,'store_tasks'])->name('tasks.store_tasks');
         Route::get('get_user_tasks/{bill}',[\App\Http\Controllers\CP\TasksController::class,'get_user_tasks'])->name('tasks.get_user_tasks');
+    });
+    Route::prefix('main_expenses')->group(function (){
+        Route::get('',[MainExpensesController::class,'index'])->name('main_expenses.index');
+        Route::get('create',[MainExpensesController::class,'create'])->name('main_expenses.create');
+        Route::post('store',[MainExpensesController::class,'store'])->name('main_expenses.store');
+        Route::get('edit/{expenses}',[MainExpensesController::class,'edit'])->name('main_expenses.edit');
+        Route::post('update/{id}',[MainExpensesController::class,'update'])->name('main_expenses.update');
     });
 
 });

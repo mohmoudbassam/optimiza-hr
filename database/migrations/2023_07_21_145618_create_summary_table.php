@@ -13,13 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('bills', function (Blueprint $table) {
+        Schema::create('summary', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('project_id')->constrained('projects');
+            $table->foreignId('company_id')->constrained('companies');
+            $table->foreignId('bill_id')->constrained('bills');
+            $table->double('percentage')->nullable();
+            $table->double('paid')->nullable();
+            $table->double('hours')->nullable();
             $table->integer('month')->nullable();
             $table->integer('year')->nullable();
-            $table->integer('amount')->nullable();
-            $table->integer('status')->nullable();
-            $table->integer('is_closed')->default(0);
             $table->timestamps();
         });
     }
@@ -31,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bills');
+        Schema::dropIfExists('summary');
     }
 };

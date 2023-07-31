@@ -8,8 +8,11 @@ use App\Http\Requests\AddBillToUserRequest;
 use App\Http\Requests\AddExpensesToBillRequest;
 use App\Http\Requests\CreateBillRequest;
 use App\Models\Bill;
+use App\Models\Company;
 use App\Models\Expense;
+use App\Models\MainExpenses;
 use App\Models\Project;
+use App\Models\Summary;
 use App\Models\Tasks;
 use App\Models\User;
 use Carbon\Carbon;
@@ -34,7 +37,7 @@ class BillsController extends Controller
                     'description' => $bill->description,
                     'total_paid' => $bill->tasks_sum_paid,
                     'total_expenses' => $bill->expenses_sum_amount,
-
+                    'is_closed' => $bill->is_closed,
                 ];
             })->withQueryString();
         return inertia('Bills/Index', [
@@ -84,8 +87,8 @@ class BillsController extends Controller
     {
         Tasks::query()->where('bill_id', $id)->where('user_id', $request->user_id)->delete();
         foreach ($request->tasks as $task) {
-            $from_date=isset($task['date'][0])  ? Carbon::parse($task['date'][0])->toDateString():null;
-            $to_date= isset($task['date'][1]) ? Carbon::parse($task['date'][1])->toDateString():null;
+            $from_date = isset($task['date'][0]) ? Carbon::parse($task['date'][0])->toDateString() : null;
+            $to_date = isset($task['date'][1]) ? Carbon::parse($task['date'][1])->toDateString() : null;
 
             Tasks::query()->create([
                 'user_id' => $request->user_id,
@@ -168,18 +171,29 @@ class BillsController extends Controller
 
 
         $bill = Bill::query()->with('expenses')->findOrFail($bill_id);
+        $main_expenses = MainExpenses::query()->get()->map(function ($main_expense) {
+            return [
+                'id' => $main_expense->id,
+                'name' => $main_expense->name,
+                'amount' => $main_expense->amount,
+                'main_expense_id'=>$main_expense->id
+            ];
+
+        });
         return inertia('Bills/AddExpensesToBill', [
             'bill' => $bill,
+            'main_expenses' => $main_expenses,
         ]);
     }
 
     public function add_expenses_to_bill_action(AddExpensesToBillRequest $request, $bill_id)
     {
+
         Expense::query()->where('bill_id', $bill_id)->delete();
         foreach ($request->expenses as $expense) {
             Expense::query()->create([
                 'bill_id' => $bill_id,
-                'description' => $expense['description'],
+                'main_expenses_id' => $expense['main_expenses_id'],
                 'amount' => $expense['amount'],
             ]);
 
@@ -190,7 +204,6 @@ class BillsController extends Controller
 
     public function summary(Bill $bill)
     {
-
         return inertia('Bills/Summary', [
             'bill' => $bill,
         ]);
@@ -198,7 +211,7 @@ class BillsController extends Controller
 
     public function get_users_summary(Request $request, Bill $bill)
     {
-        $tasks = Tasks::query()
+        $tasks = Summary::query()
             ->with(['user'])
             ->select('user_id')
             ->selectRaw('sum(hours) as hours')
@@ -227,24 +240,25 @@ class BillsController extends Controller
         );
 
     }
-    public function get_children(Bill $bill ,User $user){
-        $tasks=Tasks::query()
+
+    public function get_children(Bill $bill, User $user)
+    {
+        $tasks = Summary::query()
             ->select('project_id')
             ->selectRaw('sum(hours) as hours')
             ->selectRaw('sum(paid) as paid')
             ->selectRaw('sum(percentage) as percentage')
-            ->with(['user','project','project'])
-            ->where('bill_id',$bill->id)
-            ->where('user_id',$user->id)
+            ->with(['user', 'project', 'project'])
+            ->where('bill_id', $bill->id)
+            ->where('user_id', $user->id)
             ->groupBy('project_id')
             ->get();
 
-        $taskAfterMap = $tasks->map(function ($task) use($user) {
+        $taskAfterMap = $tasks->map(function ($task) use ($user) {
             return [
-                'key' => $user->id ??'',
-                'styleClass'=>'table-primary',
+                'key' => $user->id ?? '',
+                'styleClass' => 'table-primary',
                 'data' => collect([
-
                     'user' => $user->name,
                     'hours' => $task->hours,
                     'percentage' => $task->percentage,
@@ -260,31 +274,78 @@ class BillsController extends Controller
 
     }
 
-    public function summary_export(Request $request,Bill $bill)
+    public function summary_export(Request $request, Bill $bill)
     {
-        $tasks=Tasks::query()
-            ->select('project_id','user_id')
+        $tasks = Summary::query()
+            ->select('project_id', 'user_id')
             ->selectRaw('sum(hours) as hours')
             ->selectRaw('sum(paid) as paid')
             ->selectRaw('sum(percentage) as percentage')
-            ->with(['user','project','project'])
-            ->where('bill_id',$bill->id)
-            ->groupBy('project_id','user_id')
+            ->with(['user', 'project', 'project'])
+            ->where('bill_id', $bill->id)
+            ->groupBy('project_id', 'user_id')
             ->get();
 
-        $taskAfterMap = $tasks->map(function ($task)  {
+        $taskAfterMap = $tasks->map(function ($task) {
 
             return [
                 'data' => collect([
                     'user' => $task->user->name ?? '',
                     'hours' => $task->hours ?? '',
-                    'percentage' => $task->percentage   ?? '',
-                    'paid' => $task->paid   ?? '',
+                    'percentage' => $task->percentage ?? '',
+                    'paid' => $task->paid ?? '',
                     'project' => $task->project->name ?? '',
                     'company' => $task->project->company->name ?? '',
                 ]),
             ];
         });
         return Excel::download(new SummaryExport($taskAfterMap), 'summary.xlsx');
+    }
+
+    public function get_user_summary(User $user, Bill $bill)
+    {
+        $summary = Summary::query()
+            ->where('user_id', $user->id)
+            ->where('bill_id', $bill->id)
+            ->get();
+        $tasks = $summary->map(function ($task) {
+            return [
+                'id' => $task->id,
+                'hours' => $task->hours,
+                'percentage' => $task->percentage,
+                'paid' => $task->paid,
+                'project_id' => $task->project_id,
+                'project_name' => $task->project->name,
+                'company_id' => $task->project->company->name ?? '',
+            ];
+        });
+        return response()->json([
+            'tasks' => $tasks
+        ]);
+
+    }
+
+    public function store_summary(Bill $bill)
+    {
+        $summary = \request('tasks');
+        Summary::query()->where('bill_id', $bill->id)->where('user_id', request('user_id'))->delete();
+        foreach (collect($summary)->groupBy('project_id') as $task) {
+            Summary::query()->create([
+                'bill_id' => $bill->id,
+                'project_id' => $task[0]['project_id'],
+                'user_id' => request('user_id'),
+                'hours' => $task->sum('hours'),
+                'percentage' => $task->sum('percentage'),
+                'paid' => $task->sum('paid'),
+                'company_id' => Company::query()->where('name', $task[0]['company_id'])->first()->id ?? null,
+            ]);
+        }
+        return redirect()->route('bills.index')->with('success_message', 'Summary added to bill successfully');
+    }
+
+    public function change_bill_status(Bill $bill)
+    {
+        $bill->is_closed = !$bill->is_closed;
+        $bill->save();
     }
 }

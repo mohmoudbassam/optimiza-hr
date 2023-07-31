@@ -16,7 +16,6 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-
         if ( $request->user()->is_admin) {
 
             return $next($request);

@@ -18,18 +18,15 @@
                 <div class="form-group">
                     <label>Task Name  <span class="text-danger">*</span></label>
                     <input type="text" v-model="task.task_name"   class="form-control"  placeholder="Task Name"/>
-
                 </div>
             </div>
         </div>
         <div class="col-xl-2">
             <div class="form-group">
-
                 <div class="form-group">
                     <label>Percentage %  <span class="text-danger">*</span></label>
                     <input disabled   type="number"    v-model="task.percentage"   class="form-control"  placeholder="Percentage"/>
                 </div>
-
             </div>
         </div>
         <div class="col-xl-1">
