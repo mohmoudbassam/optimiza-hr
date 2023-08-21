@@ -176,7 +176,7 @@ class BillsController extends Controller
                 'id' => $main_expense->id,
                 'name' => $main_expense->name,
                 'amount' => $main_expense->amount,
-                'main_expense_id'=>$main_expense->id
+                'main_expense_id' => $main_expense->id
             ];
 
         });
@@ -347,5 +347,70 @@ class BillsController extends Controller
     {
         $bill->is_closed = !$bill->is_closed;
         $bill->save();
+    }
+
+    public function get_company_summary(Bill $bill)
+    {
+        $summary = Summary::query()
+            ->select('company_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->with(['company'])
+            ->where('bill_id', $bill->id)
+            ->groupBy('company_id')
+            ->get();
+
+        $taskAfterMap = $summary->map(function ($task) {
+            return [
+                'key' => $task->company->id,
+                'data' => collect([
+                    'id' => $task->id,
+                    'hours' => $task->hours,
+                    'percentage' => $task->percentage,
+                    'paid' => $task->paid,
+                    'company_id' => $task->company_id,
+                    'company_name' => $task->company->name,
+                ]),
+                'children' => [
+                    []
+                ]
+            ];
+        });
+        return response()->json(
+            $taskAfterMap
+        );
+    }
+
+    public function get_children_for_company(Bill $bill, Company $company)
+    {
+        $summary = Summary::query()
+            ->select('project_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->with(['project'])
+            ->where('bill_id', $bill->id)
+            ->where('company_id', $company->id)
+            ->groupBy('project_id')
+            ->get();
+
+        $taskAfterMap = $summary->map(function ($task) use ($company) {
+            return [
+                'key' => $company->id,
+                'styleClass' => 'table-primary',
+                'data' => collect([
+                    'hours' => $task->hours,
+                    'percentage' => $task->percentage,
+                    'paid' => $task->paid,
+                    'project_id' => $task->project_id,
+                    'project_name' => $task->project->name,
+                ]),
+            ];
+        });
+
+        return response()->json(
+            $taskAfterMap
+        );
     }
 }

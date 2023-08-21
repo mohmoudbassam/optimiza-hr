@@ -63,10 +63,20 @@
                             <div class="mb-7">
                                 <div v-for="(task,index) in tasks">
                                     <Task :user="user" @deleteTask="deleteTask" :errors="errors" :key="index"
-                                          :task_id="index" @updateHours="updateHours"
+                                          :task_id="index" :index="index" @updateHours="updateHours"
                                           @updatePercentage="updatePercentage" :task="task"
                                           :projects="projects"></Task>
                                 </div>
+<!--                                total -->
+                             <div v-if="tasks.length > 0" >
+                                 <div class="row">
+                                     <div class="col-2 d-flex justify-content-center">Total</div>
+                                     <div class="col-2 d-flex justify-content-center"> <span>{{isNaN(totalPercentage.toFixed(2))?0:totalPercentage.toFixed(2)}} %</span> </div>
+                                     <div class="col-2 d-flex justify-content-center bold">{{isNaN(totalHours.toFixed(2)) ?0:totalHours.toFixed(2)}} H</div>
+                                     <div class="col-2 d-flex justify-content-center bold">{{totalPaid.toFixed(2)}} $</div>
+
+                                 </div>
+                             </div>
                             </div>
                             <div class="card-footer">
                                 <div class="row">
@@ -112,10 +122,16 @@ export default {
         users: Array,
         projects: Array,
     },
+    mounted() {
+
+    },
     methods: {
         onChangeUser() {
             axios.get(route('bills.get_user_summary', {user: this.user_id, bill: this.bill.id})).then(response => {
                 this.tasks = response.data.tasks;
+                this.updatePercentage();
+                this.updateHours();
+                this.updateTotalPaid();
             });
             this.user = this.users.find(user => user.id === this.user_id);
             this.salary = this.user.salary;
@@ -125,6 +141,9 @@ export default {
         deleteTask(index) {
             this.tasks.splice(index, 1);
             this.updatePercentage();
+            this.updateHours();
+            this.updateTotalPaid();
+
         },
         submit() {
             this.$inertia.post(route('bills.store_summary', {bill: this.bill.id}), {
@@ -146,19 +165,27 @@ export default {
         updatePercentage() {
             let total = 0;
             total = this.tasks.reduce((total, task) => {
-                return total + parseInt(task.percentage);
+                return total + parseFloat(task.percentage);
             }, 0);
-
+            this.updateTotalPaid();
             this.totalPercentage = total;
         },
         updateHours() {
             let total = 0;
-
+            this.updateTotalPaid();
             total = this.tasks.reduce((total, task) => {
-                return total + parseInt(task.hours);
+                return total + parseFloat(task.hours);
             }, 0);
 
             this.totalHours = total;
+        },
+        updateTotalPaid() {
+            let total = 0;
+            total = this.tasks.reduce((total, task) => {
+                return total + parseFloat(task.paid);
+            }, 0);
+
+            this.totalPaid = total;
         },
     },
     watch: {
@@ -169,7 +196,6 @@ export default {
                 this.disableSubmit = true;
             } else {
                 this.disableSubmit = false;
-
                 this.errors.percentage = '';
             }
         },
@@ -203,6 +229,7 @@ export default {
             monthly_working_hours: '',
             tasks: [],
             totalPercentage: 0,
+            totalPaid: 0,
             totalHours: 0,
             disableSubmit: true,
             user: {},

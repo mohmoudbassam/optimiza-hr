@@ -61,13 +61,13 @@ class UserController extends Controller
     {
 
         $user=User::query()->findOrFail($request->id);
+
         return inertia('User/Edit',[
             'editable_user'=>$user->only('id','name','email','salary','image','dob','profile_photo_url','monthly_working_hours'),
         ]);
     }
     public function update(UpdateUserRequest $request)
     {
-
 
         $user=User::query()->findOrFail($request->id);
 

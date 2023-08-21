@@ -44,26 +44,26 @@
 
                             <div class="form-group">
                                 <label>User Name <span class="text-danger">*</span></label>
-                                <input type="text" v-model="user.name" name="name" class="form-control"
+                                <input type="text" v-model="editable_user.name" name="name" class="form-control"
                                        placeholder="User Name "/>
                                 <span v-if="errors.name" class="text-danger" v-text="errors.name"></span>
                             </div>
 
                             <div class="form-group">
                                 <label>Email address <span class="text-danger">*</span></label>
-                                <input type="email" v-model="user.email" name="email" class="form-control"
+                                <input type="email" v-model="editable_user.email" name="email" class="form-control"
                                        placeholder="Enter email"/>
                                 <span v-if="errors.email" class="text-danger" v-text="errors.email"></span>
                             </div>
                             <div class="form-group">
                                 <label>Salary <span class="text-danger">*</span></label>
-                                <input type="number" v-model="user.salary" name="salary" class="form-control"
+                                <input type="number" v-model="editable_user.salary" name="salary" class="form-control"
                                        placeholder="Salary"/>
                                 <span v-if="errors.salary" class="text-danger" v-text="errors.salary"></span>
                             </div>
                             <div class="form-group">
                                 <label>Monthly Working Hours <span class="text-danger">*</span></label>
-                                <input type="number" v-model="user.monthly_working_hours" name="salary"
+                                <input type="number" v-model="editable_user.monthly_working_hours" name="salary"
                                        class="form-control" placeholder="Monthly Working Hours"/>
                                 <span v-if="errors.monthly_working_hours" class="text-danger"
                                       v-text="errors.monthly_working_hours"></span>
@@ -71,7 +71,7 @@
 
                             <div class="form-group">
                                 <label>DOB <span class="text-danger">*</span></label>
-                                <input type="date" v-model="user.dob" class="form-control" name="dob"
+                                <input type="date" v-model="editable_user.dob" class="form-control" name="dob"
                                        placeholder="DOB"/>
                                 <span v-if="errors.dob" class="text-danger" v-text="errors.dob"></span>
                             </div>
@@ -85,7 +85,6 @@
                                 :server="{
                                url: route('users.upload_image'),
                                timeout: 7000,
-
                                process: {
                                       method: 'POST',
                                headers: {
@@ -157,7 +156,7 @@ export default {
             form: {
                 image: null,
             },
-            url: this.user.profile_photo_url,
+            url: this.editable_user.profile_photo_url,
             myFiles: [],
             csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
         };
@@ -173,10 +172,8 @@ export default {
                     this.url = e.target.result;
                 };
             }
-
         },
         handleFileUpload(response) {
-
             this.user.image = JSON.parse(response).filename;
         },
         handleFilePondInit() {
@@ -211,18 +208,18 @@ export default {
         },
         handleFilePondRemove(source, load, error) {
 
-            this.user.image = null;
+            this.editable_user.image = null;
             load();
         },
         submit() {
             const form = useForm({
-                 image: this.user.image,
-                name: this.user.name,
-                email: this.user.email,
-                salary: this.user.salary,
-                dob: this.user.dob,
-                id: this.user.id,
-                monthly_working_hours: this.user.monthly_working_hours,
+                 image: this.editable_user.image,
+                name: this.editable_user.name,
+                email: this.editable_user.email,
+                salary: this.editable_user.salary,
+                dob: this.editable_user.dob,
+                id: this.editable_user.id,
+                monthly_working_hours: this.editable_user.monthly_working_hours,
             });
             form.post(route('users.update', {id: this.user.id}), {
                 onSuccess: () => {

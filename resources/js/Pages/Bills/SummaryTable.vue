@@ -19,7 +19,6 @@ export default {
     },
     mounted() {
         axios.get(route('tasks.get_users_summary',{bill:this.bill.id })).then(response => {
-            console.log(response.data);
             this.nodes = response.data;
         });
     },
@@ -335,7 +334,6 @@ export default {
                             if (n.key === node.key) {
                                 n = lazyNode;
                             }
-
                             return n;
                         });
 

@@ -15,13 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('test', function () {
-   \App\Models\User::query()->create([
-       'name' => 'test',
-       'email' =>'admin@admin.com',
-       'password'=>bcrypt('123456'),
-       'is_admin'=>1,
-    ]);
-
+    //1692097236878 convert this to date
+    return \Carbon\Carbon::createFromTimestampMs(1692097236878)->format('Y-m-d H:i:s');
 });
 Route::get('login', [LoginController::class,'create'])->name('login');
 Route::post('login', [LoginController::class,'store'])->name('login');
@@ -81,6 +76,8 @@ Route::middleware('auth')->group(function () {
         Route::get('get_users_summary/{bill}',[\App\Http\Controllers\CP\BillsController::class,'get_users_summary'])->name('tasks.get_users_summary');
         Route::get('get_children/{bill}/{user}',[\App\Http\Controllers\CP\BillsController::class,'get_children'])->name('tasks.get_children');
         Route::get('summary_export/{bill}',[\App\Http\Controllers\CP\BillsController::class,'summary_export'])->name('tasks.summary_export');
+        Route::get('get_company_summary/{bill}',[\App\Http\Controllers\CP\BillsController::class,'get_company_summary'])->name('tasks.get_company_summary');
+        Route::get('get_children_for_company/{bill}/{company}',[\App\Http\Controllers\CP\BillsController::class,'get_children_for_company'])->name('tasks.get_children_for_company');
 
     });
     Route::prefix('Tasks')->group(function (){
