@@ -106,7 +106,6 @@
 
                                 <Button :class="view!='company'?'p-button-outlined':''" @click="view='company'" label="Company" outlined/>
 
-                                <Button class="p-button-outlined" label="Project" severity="secondary" outlined/>
                             </div>
                         </div>
                     </div>
