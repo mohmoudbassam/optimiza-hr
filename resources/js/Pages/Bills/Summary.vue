@@ -247,7 +247,7 @@
 </template>
 
 <script>
-import Dialog from 'primevue/Dialog';
+import Dialog from 'primevue/dialog';
 import Layout from "../../Shared/Layout.vue";
 import SummaryTable from "./SummaryTable.vue";
 import SummaryTableByCompany from "./SummaryTableByCompany.vue";
