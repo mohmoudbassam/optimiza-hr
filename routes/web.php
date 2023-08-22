@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
         Route::get('summary_export/{bill}',[\App\Http\Controllers\CP\BillsController::class,'summary_export'])->name('tasks.summary_export');
         Route::get('get_company_summary/{bill}',[\App\Http\Controllers\CP\BillsController::class,'get_company_summary'])->name('tasks.get_company_summary');
         Route::get('get_children_for_company/{bill}/{company}',[\App\Http\Controllers\CP\BillsController::class,'get_children_for_company'])->name('tasks.get_children_for_company');
+        Route::get('get_users_for_company_summary/{bill}/{company}',[\App\Http\Controllers\CP\BillsController::class,'get_users_for_company_summary'])->name('tasks.get_users_for_company_summary');
 
     });
     Route::prefix('Tasks')->group(function (){

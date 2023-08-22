@@ -4,7 +4,9 @@
         <Column field="hours" header="hours" ></Column>
         <Column field="percentage" header="percentage"></Column>
         <Column field="project" header="project"></Column>
-        <Column field="paid" header="paid"></Column>
+        <Column field="paid" header="Salary"></Column>
+        <Column field="fees" header="fess"></Column>
+        <Column field="total" header="total"></Column>
     </TreeTable>
 </template>
 <script>

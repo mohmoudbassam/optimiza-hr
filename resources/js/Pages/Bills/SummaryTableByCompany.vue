@@ -5,6 +5,11 @@
         <Column field="hours" header="hours" ></Column>
         <Column field="percentage" header="percentage"></Column>
         <Column field="paid" header="paid"></Column>
+        <Column header="paid" headerStyle="width: 20rem">
+            <template #body="slotProps">
+                <button @click="getUsers(slotProps.node)"   class="btn btn-primary mr-2">info</button>
+            </template>
+        </Column>
     </TreeTable>
 </template>
 
@@ -12,6 +17,7 @@
 import TreeTable from 'primevue/treetable';
 import Column from 'primevue/column';
 import axios from "axios";
+
 export default {
     name: "SummaryTableByCompany.vue",
     components: {TreeTable, Column},
@@ -56,6 +62,9 @@ export default {
             });
 
         },
+        getUsers(nodeId){
+            this.$emit('getUsersForCompany',nodeId.data.company_id);
+        }
     }
 }
 

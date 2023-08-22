@@ -14,4 +14,7 @@ class Expense extends Model
     public function bill(){
         return $this->belongsTo(Bill::class);
     }
+    public function mainExpenses(){
+        return $this->belongsTo(MainExpenses::class,'main_expenses_id','id');
+    }
 }

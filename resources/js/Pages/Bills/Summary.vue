@@ -102,9 +102,11 @@
                     <div class="row">
                         <div class="col-xl-4">
                             <div class="d-flex justify-content-sm-around flex-wrap">
-                                <Button :class="view!='user'?'p-button-outlined':''"  @click="view='user'" label="User" outlined/>
+                                <Button :class="view!='user'?'p-button-outlined':''" @click="view='user'" label="User"
+                                        outlined/>
 
-                                <Button :class="view!='company'?'p-button-outlined':''" @click="view='company'" label="Company" outlined/>
+                                <Button :class="view!='company'?'p-button-outlined':''" @click="view='company'"
+                                        label="Company" outlined/>
 
                             </div>
                         </div>
@@ -117,7 +119,66 @@
                             <div class="row align-items-center">
                                 <div class="col-lg-12 col-xl-12">
                                     <SummaryTable v-if="view==='user'" :bill="bill"></SummaryTable>
-                                    <SummaryTableByCompany  v-if="view==='company'" :bill="bill"></SummaryTableByCompany>
+                                    <SummaryTableByCompany @getUsersForCompany="getUsersForCompany"
+                                                           v-if="view==='company'" :bill="bill"></SummaryTableByCompany>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card card-custom mt-10">
+                    <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                        <div class="card-title">
+                            <h3 class="card-label">Expenses
+                                <span class="text-muted pt-2 font-size-sm d-block"></span></h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <!--begin::Dropdown-->
+                            <div class="dropdown dropdown-inline mr-2">
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-body">
+                        <!--begin: Search Form-->
+                        <!--begin::Search Form-->
+                        <div class="mb-7">
+                            <div class="row align-items-center">
+                                <div
+                                    class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded"
+                                    id="kt_datatable" style="">
+                                    <table class="datatable-table" style="display: block;">
+                                        <thead class="datatable-head">
+                                        <tr class="datatable-row" style="left: 0px;">
+
+
+                                            <th data-field="OrderID"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 400px;">Title</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 400px;">Amount</span></th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody style="" class="datatable-body">
+                                        <tr v-for="expense in expenses" class="datatable-row" style="left: 0px;">
+
+                                            <td data-field="OrderID" class="datatable-cell text-center"><span
+                                                style="width: 400px;">{{ expense.main_expenses.name }}</span></td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 400px;">{{ expense.amount }}</span></td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
                                 </div>
                             </div>
                         </div>
@@ -128,37 +189,106 @@
             </div>
             <!--end::Container-->
         </div>
+
+        <Dialog v-model:visible="visible" modal header="" :style="{ width: '50vw' }">
+            <div
+                class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded"
+                id="kt_datatable" style="">
+                <table class="datatable-table" style="display: block;">
+                    <thead class="datatable-head">
+                    <tr class="datatable-row" style="left: 0px;">
+
+
+                        <th data-field="OrderID"
+                            class="datatable-cell datatable-cell-sort text-center"><span
+                            style="width: 100px;">user</span></th>
+                        <th data-field="Country"
+                            class="datatable-cell datatable-cell-sort text-center"><span
+                            style="width: 100px;">project</span></th>
+
+                        <th data-field="Country"
+                            class="datatable-cell datatable-cell-sort text-center"><span
+                            style="width: 100px;">hours</span></th>
+                        <th data-field="Country"
+                            class="datatable-cell datatable-cell-sort text-center"><span
+                            style="width: 100px;">paid</span></th>
+                        <th data-field="Country"
+                            class="datatable-cell datatable-cell-sort text-center"><span
+                            style="width: 100px;">fees</span></th>
+                        <th data-field="Country"
+                            class="datatable-cell datatable-cell-sort text-center"><span
+                            style="width: 100px;">paid with fees</span></th>
+
+                    </tr>
+                    </thead>
+                    <tbody style="" class="datatable-body">
+                    <tr v-for="user in usersForCompany" class="datatable-row" style="left: 0px;">
+
+                        <td data-field="OrderID" class="datatable-cell text-center"><span
+                            style="width: 100px;">{{ user.user }}</span></td>
+                        <td data-field="Country" class="datatable-cell text-center"><span
+                            style="width: 100px;">{{ user.project_name }}</span></td>
+                        <td data-field="Country" class="datatable-cell text-center"><span
+                            style="width: 100px;">{{ user.hours }}</span></td>
+                        <td data-field="Country" class="datatable-cell text-center"><span
+                            style="width: 100px;">{{ user.paid }}</span></td>
+                        <td data-field="Country" class="datatable-cell text-center"><span
+                            style="width: 100px;">{{ user.fees }}</span></td>
+                        <td data-field="Country" class="datatable-cell text-center"><span
+                            style="width: 100px;">{{ user.total }}</span></td>
+
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </Dialog>
     </Layout>
 </template>
 
 <script>
+import Dialog from 'primevue/Dialog';
 import Layout from "../../Shared/Layout.vue";
 import SummaryTable from "./SummaryTable.vue";
 import SummaryTableByCompany from "./SummaryTableByCompany.vue";
 import Button from 'primevue/button';
+import axios from "axios";
 
 export default {
     name: "Summary",
-    components: {SummaryTable, Layout, SummaryTableByCompany, Button},
+    components: {SummaryTable, Layout, SummaryTableByCompany, Button, Dialog},
     props: {
         bill: {
             type: Object,
             required: true
-        }
+        },
+        expenses: {
+            type: Array,
+            required: true
+        },
     },
     mounted() {
         this.view = 'user';
     },
     methods: {
-        loadCompany() {
-            console.log('load company');
-        },
+        getUsersForCompany(company_id) {
+            axios.get(route('tasks.get_users_for_company_summary', {
+                bill: this.bill.id,
+                company: company_id
+            })).then(response => {
+                this.usersForCompany = response.data;
+                this.visible = true;
+            });
+        }
     },
     data() {
         return {
-            view: 'user'
+            view: 'user',
+            visible: false,
+            usersForCompany: []
         }
-    }
+    },
+
 }
 </script>
 
