@@ -35,6 +35,10 @@
                 <Link :href="route('main_expenses.index')" :class="{'active':$page.component=='Team/Months' || $page.component=='Team/MyTasks'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Expenses
                 </Link>
             </li>
+            <li class="nav-item mr-3" v-if="$page.props.user.is_admin==1">
+                <Link :href="route('reports.index')" :class="{'active':$page.component=='Report' || $page.component=='Report'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Report
+                </Link>
+            </li>
 
 
             <li class="nav-item mr-3">
