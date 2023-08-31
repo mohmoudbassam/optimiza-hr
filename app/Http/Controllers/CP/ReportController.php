@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CP;
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\Company;
+use App\Models\Project;
 use App\Models\Summary;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -170,4 +171,83 @@ class ReportController extends Controller
             $taskAfterMap
         );
     }
+
+    public function get_report_by_projects(Request $request){
+        $bill = Bill::query()
+            ->where('year', $request->year)
+            ->where('month', $request->month)
+            ->first();
+        $summary = Summary::query()
+            ->select('project_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->with(['company'])
+            ->where('bill_id', $bill->id)
+            ->groupBy('project_id')
+            ->get();
+
+
+
+        $taskAfterMap = $summary->map(function ($task) {
+           $company=Company::query()->where('id',$task->project->company_id)->first();
+            return [
+                'key' => $task->project->id,
+                'data' => collect([
+                    'id' => $task->id,
+                    'hours' => $task->hours,
+                    'percentage' => $task->percentage,
+                    'paid' => $task->paid,
+                    'company_id' => $company->id,
+                    'company_name' => $company->name,
+                    'project_name' => $task->project->name,
+                ]),
+                'children' => [
+                    []
+                ]
+            ];
+        });
+
+        return response()->json(
+            $taskAfterMap
+        );
+    }
+
+    public function get_children_for_project(Request $request,Project $project)
+    {
+        $bill = Bill::query()
+            ->where('year', $request->year)
+            ->where('month', $request->month)
+            ->first();
+        $summary = Summary::query()
+            ->select('user_id')
+            ->selectRaw('sum(hours) as hours')
+            ->selectRaw('sum(paid) as paid')
+            ->selectRaw('sum(percentage) as percentage')
+            ->with(['user'])
+            ->where('bill_id', $bill->id)
+            ->where('project_id', $project->id)
+            ->groupBy('user_id')
+            ->get();
+
+        $taskAfterMap = $summary->map(function ($task) use ($project) {
+            return [
+                'key' => $project->id,
+                'styleClass' => 'table-primary',
+                'data' => collect([
+                    'hours' => $task->hours,
+                    'percentage' => $task->percentage,
+                    'paid' => $task->paid,
+                    'user_id' => $task->user_id,
+                    'employee' => $task->user->name,
+                ]),
+            ];
+        });
+
+        return response()->json(
+            $taskAfterMap
+        );
+    }
+
+
 }

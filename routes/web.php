@@ -101,7 +101,16 @@ Route::middleware('auth')->group(function () {
         Route::get('get_employee_children', [\App\Http\Controllers\CP\ReportController::class, 'get_employee_children'])->name('reports.get_employee_children');
         Route::get('get_company_report', [\App\Http\Controllers\CP\ReportController::class, 'get_company_report'])->name('reports.get_company_report');
         Route::get('get_children_for_company/{company}',[\App\Http\Controllers\CP\ReportController::class, 'get_children_for_company'])->name('reports.get_children_for_company');
-
+        Route::get('reports.get_report_by_projects',[\App\Http\Controllers\CP\ReportController::class, 'get_report_by_projects'])->name('reports.get_report_by_projects');
+        Route::get('get_children_for_project/{project}',[\App\Http\Controllers\CP\ReportController::class, 'get_children_for_project'])->name('reports.get_children_for_project');
+    });
+    Route::prefix('Teams')->group(function () {
+        Route::get('', [\App\Http\Controllers\CP\TeamController::class, 'index'])->name('teams.index');
+        Route::get('create', [\App\Http\Controllers\CP\TeamController::class, 'create'])->name('teams.create');
+        Route::post('store', [\App\Http\Controllers\CP\TeamController::class, 'store'])->name('teams.store');
+        Route::get('edit', [\App\Http\Controllers\CP\TeamController::class, 'edit'])->name('teams.edit');
+        Route::post('update', [\App\Http\Controllers\CP\TeamController::class, 'update'])->name('teams.update');
+        Route::post('destroy', [\App\Http\Controllers\CP\TeamController::class, 'destroy'])->name('teams.destroy');
 
     });
 
