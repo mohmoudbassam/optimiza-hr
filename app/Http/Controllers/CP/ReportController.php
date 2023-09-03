@@ -55,7 +55,7 @@ class ReportController extends Controller
                 'data' => collect([
                     'user' => $task->user->name,
                     'hours' => number_format($task->hours,2),
-                    'percentage' => $task->percentage,
+                    'percentage' => number_format($task->percentage,2),
                     'paid' => number_format($task->paid, 2),
                     'fees' => number_format(($task->paid * 0.025), 2),
                     'total' => number_format(($task->paid * 0.025) + $task->paid, 2)
