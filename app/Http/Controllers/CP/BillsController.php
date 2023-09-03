@@ -246,9 +246,9 @@ class BillsController extends Controller
                 'key' => $task->user->id,
                 'data' => collect([
                     'user' => $task->user->name,
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
-                    'paid' => $task->paid,
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                     'fees' => number_format(($task->paid * 0.025), 2),
                     'total' => number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
@@ -288,9 +288,9 @@ class BillsController extends Controller
                 'styleClass' => 'table-primary',
                 'data' => collect([
                     'user' => $user->name,
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
-                    'paid' => $task->paid,
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                     'project' => $task->project->name,
                     'fees'=>number_format(($task->paid * 0.025), 2),
                     'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
@@ -321,9 +321,9 @@ class BillsController extends Controller
             return [
                 'data' => collect([
                     'user' => $task->user->name ?? '',
-                    'hours' => $task->hours ?? '',
-                    'percentage' => $task->percentage ?? '',
-                    'paid' => $task->paid ?? '',
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                     'project' => $task->project->name ?? '',
                     'company' => $task->project->company->name ?? '',
                 ]),
@@ -341,9 +341,9 @@ class BillsController extends Controller
         $tasks = $summary->map(function ($task) {
             return [
                 'id' => $task->id,
-                'hours' => $task->hours,
-                'percentage' => $task->percentage,
-                'paid' => $task->paid,
+                'hours' => round($task->hours, 2),
+                'percentage' =>round($task->percentage, 2),
+                'paid' => number_format(round($task->paid, 2),2),
                 'project_id' => $task->project_id,
                 'project_name' => $task->project->name,
                 'company_id' => $task->project->company->name ?? '',
@@ -401,9 +401,9 @@ class BillsController extends Controller
                 'key' => $task->company->id,
                 'data' => collect([
                     'id' => $task->id,
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
-                    'paid' => $task->paid,
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                     'company_id' => $task->company_id,
                     'company_name' => $task->company->name,
                     'fees'=>number_format(($task->paid * 0.025), 2),
@@ -443,9 +443,9 @@ class BillsController extends Controller
                 'key' => $company->id,
                 'styleClass' => 'table-primary',
                 'data' => collect([
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
-                    'paid' => $task->paid,
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                     'project_id' => $task->project_id,
                     'project_name' => $task->project->name,
                     'fees'=>number_format(($task->paid * 0.025), 2),
@@ -474,8 +474,9 @@ class BillsController extends Controller
                     'project_name' => $task->project->name,
                     'user_id' => $task->user_id,
                     'user_name' => $task->user->name,
-                    'hours' => $task->hours,
-                    'paid' => $task->paid,
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                 ];
             });
         return response()->json($summary);
@@ -494,8 +495,9 @@ class BillsController extends Controller
                     'project_name' => $task->project->name,
                     'user_id' => $task->user_id,
                     'user_name' => $task->user->name,
-                    'hours' => $task->hours,
-                    'paid' => $task->paid,
+                    'hours' => round($task->hours, 2),
+                    'percentage' =>round($task->percentage, 2),
+                    'paid' => number_format(round($task->paid, 2),2),
                 ];
             });
         return response()->json($summary);
