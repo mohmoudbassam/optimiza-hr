@@ -50,56 +50,14 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Email address <span class="text-danger">*</span></label>
-                                <input type="email" v-model="editable_user.email" name="email" class="form-control"
-                                       placeholder="Enter email"/>
-                                <span v-if="errors.email" class="text-danger" v-text="errors.email"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Salary <span class="text-danger">*</span></label>
-                                <input type="number" v-model="editable_user.salary" name="salary" class="form-control"
-                                       placeholder="Salary"/>
-                                <span v-if="errors.salary" class="text-danger" v-text="errors.salary"></span>
-                            </div>
-                            <div class="form-group">
-                                <label>Monthly Working Hours <span class="text-danger">*</span></label>
-                                <input type="number" v-model="editable_user.monthly_working_hours" name="salary"
-                                       class="form-control" placeholder="Monthly Working Hours"/>
-                                <span v-if="errors.monthly_working_hours" class="text-danger"
-                                      v-text="errors.monthly_working_hours"></span>
+                                <label for="exampleSelect1">Manger
+                                    <span class="text-danger">*</span></label>
+                                <select class="form-control" v-model="editable_user.team_leader_id">
+                                    <option v-for="manger in mangers"  :checked="editable_user.team_leader_id===manger.id?'checked':''" :value="manger.id">{{ manger.name }}</option>
+                                </select>
+
                             </div>
 
-                            <div class="form-group">
-                                <label>DOB <span class="text-danger">*</span></label>
-                                <input type="date" v-model="editable_user.dob" class="form-control" name="dob"
-                                       placeholder="DOB"/>
-                                <span v-if="errors.dob" class="text-danger" v-text="errors.dob"></span>
-                            </div>
-
-                            <FilePond
-                                ref="pond"
-                                label-idle="Drop files here..."
-                                v-bind:allow-multiple="false"
-                                allowImagePreview="true"
-                                name="image"
-                                :server="{
-                               url: route('users.upload_image'),
-                               timeout: 7000,
-                               process: {
-                                      method: 'POST',
-                               headers: {
-                                   'X-CSRF-TOKEN': csrfToken
-                                 },
-                                 onload:handleFileUpload,
-
-                                 },
-                                 remove:handleFilePondRemove
-                               }"
-                                v-bind:files="myFiles"
-                                accepted-file-types="image/jpeg, image/png"
-                                v-on:init="handleFilePondInit"
-
-                            />
                         </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary mr-2">Submit</button>
@@ -134,95 +92,33 @@ import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import FilePondPluginFilePoster from "filepond-plugin-file-poster";
 
-// Create component
-const FilePond = vueFilePond(
-    FilePondPluginFileValidateType,
-    FilePondPluginImagePreview,
-    FilePondPluginFilePoster
-);
+
 export default {
     name: "Edit",
     components: {
         Layout,
-        FilePond
     },
     props: {
         user: Object,
         errors: Object,
-        editable_user: Object
+        editable_user: Object,
+        mangers: Array,
     },
     data() {
         return {
-            form: {
-                image: null,
-            },
-            url: this.editable_user.profile_photo_url,
-            myFiles: [],
             csrfToken: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
         };
     },
 
     methods: {
-        previewImage() {
-            const file = this.$refs.image.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    this.url = e.target.result;
-                };
-            }
-        },
-        handleFileUpload(response) {
-            this.editable_user.profile_photo_url = JSON.parse(response).filename;
-        },
-        handleFilePondInit() {
-
-            if(this.editable_user.profile_photo_url){
-                this.myFiles =  [
-                    {
-                        // the server file reference
-                        source: this.editable_user.profile_photo_url,
-
-                        // set type to local to indicate an already uploaded file
-                        options: {
-                            type: 'local',
-
-                            // optional stub file information
-                            file: {
-                                name: 'my-file.png',
-                                size: 10,
-                                type: 'image/png',
-                            },
-
-                            // pass poster property
-                            metadata: {
-                                poster: this.editable_user.profile_photo_url,
-                            },
-                        },
-                    },
-                ]
-            }
-
-        },
-        handleFilePondRemove(source, load, error) {
-
-            this.editable_user.image = null;
-            load();
-        },
         submit() {
             const form = useForm({
-                 image: this.editable_user.profile_photo_url,
                 name: this.editable_user.name,
-                email: this.editable_user.email,
-                salary: this.editable_user.salary,
-                dob: this.editable_user.dob,
-                id: this.editable_user.id,
-                monthly_working_hours: this.editable_user.monthly_working_hours,
+                manger_id: this.editable_user.team_leader_id,
             });
-            form.post(route('users.update', {id: this.user.id}), {
+            form.post(route('teams.update', {id: this.user.id}), {
                 onSuccess: () => {
-                    createToast("User Updated Successfully", {
+                    createToast("Team Updated Successfully", {
                         type: "success",
                         position: "top-right",
                         timeout: 3000,
@@ -234,10 +130,6 @@ export default {
                 },
             });
         },
-
-        mounted() {
-            console.log('sdffds')
-        }
     },
 }
 </script>

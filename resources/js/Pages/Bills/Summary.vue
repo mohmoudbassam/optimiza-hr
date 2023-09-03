@@ -119,7 +119,7 @@
                             <div class="row align-items-center">
                                 <div class="col-lg-12 col-xl-12">
                                     <SummaryTable v-if="view==='user'" :bill="bill"></SummaryTable>
-                                    <SummaryTableByCompany @getUsersForCompany="getUsersForCompany"
+                                    <SummaryTableByCompany @getUsersForCompany="getUsersForCompany" @getUsersForProject="getUsersForProject"
                                                            v-if="view==='company'" :bill="bill"></SummaryTableByCompany>
                                 </div>
                             </div>
@@ -160,10 +160,10 @@
 
                                             <th data-field="OrderID"
                                                 class="datatable-cell datatable-cell-sort text-center"><span
-                                                style="width: 400px;">Title</span></th>
+                                                style="width: 200px;">Title</span></th>
                                             <th data-field="Country"
                                                 class="datatable-cell datatable-cell-sort text-center"><span
-                                                style="width: 400px;">Amount</span></th>
+                                                style="width: 200px;">Amount</span></th>
 
                                         </tr>
                                         </thead>
@@ -171,10 +171,45 @@
                                         <tr v-for="expense in expenses" class="datatable-row" style="left: 0px;">
 
                                             <td data-field="OrderID" class="datatable-cell text-center"><span
-                                                style="width: 400px;">{{ expense.main_expenses.name }}</span></td>
+                                                style="width: 200px;">{{ expense.main_expenses.name }}</span>
+                                            </td>
                                             <td data-field="Country" class="datatable-cell text-center"><span
-                                                style="width: 400px;">{{ expense.amount }}</span></td>
+                                                style="width: 200px;">{{ expense.amount }}</span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
 
+                                </div>
+                                <div
+                                    class="ml-30 datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded"
+                                    id="kt_datatable" style="">
+                                    <table class="datatable-table border-1" style="display: block;">
+                                        <thead class="datatable-head">
+                                        <tr class="datatable-row" style="left: 0px;">
+
+
+                                            <th data-field="OrderID"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 200px;">Total Expenses</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 200px;">Total Paid</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 200px;">Total Paid with fees</span></th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody style="" class="datatable-body">
+                                        <tr  class="datatable-row" style="left: 0px;">
+
+                                            <td data-field="OrderID" class="datatable-cell text-center"><span
+                                                style="width: 200px;">{{ total_expenses }}</span>
+                                            </td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 200px;">{{ total_paid }}</span></td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 200px;">{{ total_paid_with_fees }}</span></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -266,6 +301,10 @@ export default {
             type: Array,
             required: true
         },
+        total_paid:0,
+        total_expenses:0,
+        total_fees:0,
+        total_paid_with_fees:0
     },
     mounted() {
         this.view = 'user';
@@ -275,6 +314,15 @@ export default {
             axios.get(route('tasks.get_users_for_company_summary', {
                 bill: this.bill.id,
                 company: company_id
+            })).then(response => {
+                this.usersForCompany = response.data;
+                this.visible = true;
+            });
+        },
+        getUsersForProject(project_id){
+            axios.get(route('tasks.get_users_for_project_summary', {
+                bill: this.bill.id,
+                project: project_id
             })).then(response => {
                 this.usersForCompany = response.data;
                 this.visible = true;

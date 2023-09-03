@@ -39,8 +39,10 @@
                 <Link :href="route('reports.index')" :class="{'active':$page.component=='Report' || $page.component=='Report'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Report
                 </Link>
             </li>
-
-
+<!--            <li class="nav-item mr-3" v-if="$page.props.user.is_admin==1">-->
+<!--                <Link :href="route('teams.index')" :class="{'active':$page.component=='Teams/Index'}" class="nav-link py-4 px-6" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Teams-->
+<!--                </Link>-->
+<!--            </li>-->
             <li class="nav-item mr-3">
                 <Link href="/logout" class="nav-link py-4 px-6" method="post" data-toggle="tab" data-target="#kt_header_tab_2" role="tab">Logout</link>
             </li>

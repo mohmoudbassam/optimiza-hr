@@ -154,6 +154,7 @@
                             id="kt_datatable">
                             <EmployeesTable :year="year" :month="month" v-if="view==='user'"></EmployeesTable>
                             <ReportTableByCompany :year="year" :month="month" v-if="view==='companies'"></ReportTableByCompany>
+                            <ReportTableByProjects :year="year" :month="month" v-if="view==='projects'"></ReportTableByProjects>
                         </div>
                         <!--end: Datatable-->
                     </div>
@@ -172,11 +173,12 @@ import Layout from "../../Shared/Layout.vue";
 import EmployeesTable from "./EmployeesTable.vue";
 import Button from 'primevue/button';
 import ReportTableByCompany from "./ReportTableByCompany.vue";
+import ReportTableByProjects from "./ReportTableByProjects.vue";
 import axios from "axios";
 
 export default {
     name: "Report",
-    components: {Layout, axios, EmployeesTable, Button,ReportTableByCompany},
+    components: {Layout, axios, EmployeesTable, Button,ReportTableByCompany,ReportTableByProjects},
     props: {
         years: Array,
         months: Array,
