@@ -169,6 +169,9 @@
                                         style="width: 123px;">salary</span></th>
                                     <th data-field="Country"
                                         class="datatable-cell datatable-cell-sort text-center"><span
+                                        style="width: 123px;">salary with fees</span></th>
+                                    <th data-field="Country"
+                                        class="datatable-cell datatable-cell-sort text-center"><span
                                         style="width: 123px;">expenses</span></th>
                                     <th data-field="Country" class="datatable-cell datatable-cell-sort text-right"><span
                                         style="width: 90px;">Actions</span></th>
@@ -184,9 +187,13 @@
                                         style="width: 123px;">{{ bill.year }}</span></td>
                                     <td data-field="Country" aria-label="Paraguay"
                                         class="datatable-cell text-center"><span
-                                        style="width: 123px;">{{ bill.total_paid }}</span></td>
+                                        style="width: 123px;">{{ bill.total_salary }}</span></td>
                                     <td data-field="Country" aria-label="Paraguay"
                                         class="datatable-cell text-center"><span
+                                        style="width: 123px;">{{ bill.total_salaries_with_fees }}</span></td>
+                                    <td data-field="Country" aria-label="Paraguay"
+                                        class="datatable-cell text-center">
+                                        <span
                                         style="width: 123px;">{{ bill.total_expenses }}</span></td>
                                     <td>
 

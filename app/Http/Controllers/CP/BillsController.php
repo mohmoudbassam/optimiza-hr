@@ -27,6 +27,7 @@ class BillsController extends Controller
         $bills = Bill::query()
             ->withSum('tasks', 'paid')
             ->withSum('expenses', 'amount')
+            ->withSum('summary', 'paid')
             ->paginate(5)
             ->through(function ($bill) {
                 return [
@@ -36,10 +37,13 @@ class BillsController extends Controller
                     'price' => $bill->price,
                     'description' => $bill->description,
                     'total_paid' => $bill->tasks_sum_paid,
+                    'total_salary'=> number_format($bill->summary_sum_paid,2),
                     'total_expenses' => $bill->expenses_sum_amount,
                     'is_closed' => $bill->is_closed,
+                    'total_salaries_with_fees'=> number_format(($bill->summary_sum_paid * .025)+$bill->summary_sum_paid, 2),
                 ];
             })->withQueryString();
+
         return inertia('Bills/Index', [
             'bills' => $bills,
             'filters' => $request->only('search')

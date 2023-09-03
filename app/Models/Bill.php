@@ -22,4 +22,8 @@ class Bill extends Model
     {
         return $this->hasMany(Expense::class, 'bill_id');
     }
+    public function summary()
+    {
+        return $this->hasMany(Summary::class, 'bill_id');
+    }
 }
