@@ -15,8 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('test', function () {
-    //1692097236878 convert this to date
-    return \Carbon\Carbon::createFromTimestampMs(1692097236878)->format('Y-m-d H:i:s');
+    \App\Models\User::query()->create([
+        'name' => 'test',
+        'email' =>'admin@admin.com',
+        'password'=>bcrypt('123456'),
+        'is_admin'=>1,
+    ]);
 });
 Route::get('login', [LoginController::class, 'create'])->name('login');
 Route::post('login', [LoginController::class, 'store'])->name('login');
