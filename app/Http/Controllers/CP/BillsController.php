@@ -205,9 +205,17 @@ class BillsController extends Controller
     public function summary(Bill $bill)
     {
         $expenses = Expense::query()->with('mainExpenses')->where('bill_id', $bill->id)->get();
+        $total_paid = Summary::query()->where('bill_id', $bill->id)->sum('paid');
+        $total_expenses = $bill->expenses()->sum('amount');
+        $total_fees = $total_paid * 0.025;
+        $total_paid_with_fees = $total_paid + $total_fees;
         return inertia('Bills/Summary', [
             'bill' => $bill,
-            'expenses'=>$expenses
+            'expenses' => $expenses,
+            'total_paid' => $total_paid,
+            'total_expenses' => $total_expenses,
+            'total_fees' => $total_fees,
+            'total_paid_with_fees' => $total_paid_with_fees,
         ]);
     }
 
@@ -223,6 +231,10 @@ class BillsController extends Controller
             ->groupBy('user_id')
             ->get();
 
+        $total_salary = $tasks->sum('paid');
+        $total_fees = $total_salary * 0.025;
+        $total_salary_with_fees = $total_salary + $total_fees;
+        $total_hours = $tasks->sum('hours');
         $taskAfterMap = $tasks->map(function ($task) {
             return [
                 'key' => $task->user->id,
@@ -231,8 +243,8 @@ class BillsController extends Controller
                     'hours' => $task->hours,
                     'percentage' => $task->percentage,
                     'paid' => $task->paid,
-                    'fees'=>number_format(($task->paid*0.025),2),
-                    'total'=>number_format(($task->paid*0.025)+$task->paid,2)
+                    'fees' => number_format(($task->paid * 0.025), 2),
+                    'total' => number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
                 'children' => [
                     []
@@ -240,7 +252,13 @@ class BillsController extends Controller
             ];
         });
         return response()->json(
-            $taskAfterMap
+            [
+                'data' => $taskAfterMap,
+                'total_salary' => number_format($total_salary, 2),
+                'total_fees' => number_format($total_fees, 2),
+                'total_salary_with_fees' => number_format($total_salary_with_fees, 2),
+                'total_hours' => $total_hours,
+            ]
         );
 
     }
@@ -268,6 +286,8 @@ class BillsController extends Controller
                     'percentage' => $task->percentage,
                     'paid' => $task->paid,
                     'project' => $task->project->name,
+                    'fees'=>number_format(($task->paid * 0.025), 2),
+                    'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
             ];
         });
@@ -321,6 +341,8 @@ class BillsController extends Controller
                 'project_id' => $task->project_id,
                 'project_name' => $task->project->name,
                 'company_id' => $task->project->company->name ?? '',
+                'fees'=>number_format(($task->paid * 0.025), 2),
+                'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
             ];
         });
         return response()->json([
@@ -364,7 +386,10 @@ class BillsController extends Controller
             ->where('bill_id', $bill->id)
             ->groupBy('company_id')
             ->get();
-
+        $total_salary = $summary->sum('paid');
+        $total_fees = $total_salary * 0.025;
+        $total_salary_with_fees = $total_salary + $total_fees;
+        $total_hours = $summary->sum('hours');
         $taskAfterMap = $summary->map(function ($task) {
             return [
                 'key' => $task->company->id,
@@ -375,6 +400,8 @@ class BillsController extends Controller
                     'paid' => $task->paid,
                     'company_id' => $task->company_id,
                     'company_name' => $task->company->name,
+                    'fees'=>number_format(($task->paid * 0.025), 2),
+                    'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
                 'children' => [
                     []
@@ -382,7 +409,13 @@ class BillsController extends Controller
             ];
         });
         return response()->json(
-            $taskAfterMap
+            [
+                'data' => $taskAfterMap,
+                'total_salary' => number_format($total_salary, 2),
+                'total_fees' => number_format($total_fees, 2),
+                'total_salary_with_fees' => number_format($total_salary_with_fees, 2),
+                'total_hours' => $total_hours,
+            ]
         );
     }
 
@@ -409,6 +442,8 @@ class BillsController extends Controller
                     'paid' => $task->paid,
                     'project_id' => $task->project_id,
                     'project_name' => $task->project->name,
+                    'fees'=>number_format(($task->paid * 0.025), 2),
+                    'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
             ];
         });
@@ -418,22 +453,43 @@ class BillsController extends Controller
         );
     }
 
-    public function get_users_for_company_summary(Bill $bill, Company $company){
-        $summary=Summary::query()->with(['user','project'])
-            ->where('company_id',$company->id)
-            ->where('bill_id',$bill->id)
-            ->get()->map(function ($task){
+    public function get_users_for_company_summary(Bill $bill, Company $company)
+    {
+        $summary = Summary::query()->with(['user', 'project'])
+            ->where('company_id', $company->id)
+            ->where('bill_id', $bill->id)
+            ->get()->map(function ($task) {
                 return [
                     'user' => $task->user->name,
-                    'fees'=>number_format(($task->paid*0.025),2),
-                    'total'=>number_format(($task->paid*0.025)+$task->paid,2),
-                    'id'=>$task->id,
-                    'project_id'=>$task->project_id,
-                    'project_name'=>$task->project->name,
-                    'user_id'=>$task->user_id,
-                    'user_name'=>$task->user->name,
-                    'hours'=>$task->hours,
-                    'paid'=>$task->paid,
+                    'fees' => number_format(($task->paid * 0.025), 2),
+                    'total' => number_format(($task->paid * 0.025) + $task->paid, 2),
+                    'id' => $task->id,
+                    'project_id' => $task->project_id,
+                    'project_name' => $task->project->name,
+                    'user_id' => $task->user_id,
+                    'user_name' => $task->user->name,
+                    'hours' => $task->hours,
+                    'paid' => $task->paid,
+                ];
+            });
+        return response()->json($summary);
+    } public function get_users_for_project_summary(Bill $bill, Project $project)
+    {
+        $summary = Summary::query()->with(['user', 'project'])
+            ->where('project_id', $project->id)
+            ->where('bill_id', $bill->id)
+            ->get()->map(function ($task) {
+                return [
+                    'user' => $task->user->name,
+                    'fees' => number_format(($task->paid * 0.025), 2),
+                    'total' => number_format(($task->paid * 0.025) + $task->paid, 2),
+                    'id' => $task->id,
+                    'project_id' => $task->project_id,
+                    'project_name' => $task->project->name,
+                    'user_id' => $task->user_id,
+                    'user_name' => $task->user->name,
+                    'hours' => $task->hours,
+                    'paid' => $task->paid,
                 ];
             });
         return response()->json($summary);

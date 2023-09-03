@@ -174,11 +174,10 @@ export default {
             }
         },
         handleFileUpload(response) {
-            this.user.image = JSON.parse(response).filename;
+            this.editable_user.profile_photo_url = JSON.parse(response).filename;
         },
         handleFilePondInit() {
 
-            console.log(this.user.profile_photo_url)
             if(this.editable_user.profile_photo_url){
                 this.myFiles =  [
                     {
@@ -213,7 +212,7 @@ export default {
         },
         submit() {
             const form = useForm({
-                 image: this.editable_user.image,
+                 image: this.editable_user.profile_photo_url,
                 name: this.editable_user.name,
                 email: this.editable_user.email,
                 salary: this.editable_user.salary,

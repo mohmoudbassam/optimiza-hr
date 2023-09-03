@@ -1,15 +1,23 @@
 <template>
     <TreeTable :value="nodes" :lazy="true" :loading="loading" @nodeExpand="onExpand" class="p-treetable-lg">
         <Column field="company_name" header="company" :expander="true"></Column>
-        <Column field="project_name" header="project" ></Column>
-        <Column field="hours" header="hours" ></Column>
+        <Column field="project_name" header="project">
+            <template #footer> Total:</template>
+        </Column>
+        <Column field="hours" header="hours">
+            <template #footer> {{total_hours}}</template>
+        </Column>
         <Column field="percentage" header="percentage"></Column>
-        <Column field="paid" header="paid"></Column>
-<!--        <Column header="paid" headerStyle="width: 20rem">-->
-<!--            <template #body="slotProps">-->
-<!--                <button @click="getUsers(slotProps.node)"   class="btn btn-primary mr-2">info</button>-->
-<!--            </template>-->
-<!--        </Column>-->
+        <Column field="paid" header="paid">
+            <template #footer> {{totalSalary}}</template>
+        </Column>
+        <Column field="fess" header="fess">
+            <template #footer> {{total_fees}}</template>
+        </Column>
+        <Column field="total" header="total">
+            <template #footer> {{total_salary_with_fees}} </template>
+        </Column>
+
     </TreeTable>
 </template>
 
@@ -38,18 +46,30 @@ export default {
         return {
             nodes: [],
             loading: false,
+            totalSalary: 0,
+            total_fees: 0,
+            total_salary_with_fees: 0,
+            total_hours: 0,
 
         }
     },
     mounted() {
-        axios.get(route('reports.get_company_report',{month:this.month,year: this.year })).then(response => {
-            this.nodes = response.data;
+        axios.get(route('reports.get_company_report', {month: this.month, year: this.year})).then(res => {
+            this.nodes = res.data.data;
+            this.totalSalary = res.data.total_salary
+            this.total_fees = res.data.total_fees
+            this.total_salary_with_fees = res.data.total_salary_with_fees
+            this.total_hours = res.data.total_hours
         });
     },
-    methods:{
+    methods: {
         onExpand(node) {
 
-            axios.get(route('reports.get_children_for_company',{month:this.month,year: this.year,company:node.key })).then(response => {
+            axios.get(route('reports.get_children_for_company', {
+                month: this.month,
+                year: this.year,
+                company: node.key
+            })).then(response => {
 
                 this.loading = true;
 
@@ -73,8 +93,8 @@ export default {
             });
 
         },
-        getUsers(nodeId){
-            this.$emit('getUsersForCompany',nodeId.data.company_id);
+        getUsers(nodeId) {
+            this.$emit('getUsersForCompany', nodeId.data.company_id);
         }
     }
 }

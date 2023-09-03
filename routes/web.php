@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
         Route::get('get_company_summary/{bill}', [\App\Http\Controllers\CP\BillsController::class, 'get_company_summary'])->name('tasks.get_company_summary');
         Route::get('get_children_for_company/{bill}/{company}', [\App\Http\Controllers\CP\BillsController::class, 'get_children_for_company'])->name('tasks.get_children_for_company');
         Route::get('get_users_for_company_summary/{bill}/{company}', [\App\Http\Controllers\CP\BillsController::class, 'get_users_for_company_summary'])->name('tasks.get_users_for_company_summary');
+        Route::get('get_users_for_project_summary/{bill}/{project}', [\App\Http\Controllers\CP\BillsController::class, 'get_users_for_project_summary'])->name('tasks.get_users_for_project_summary');
 
     });
     Route::prefix('Tasks')->group(function () {
@@ -98,7 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('Reports')->group(function () {
         Route::get('', [\App\Http\Controllers\CP\ReportController::class, 'index'])->name('reports.index');
         Route::get('get_employees_summary', [\App\Http\Controllers\CP\ReportController::class, 'get_employees_summary'])->name('reports.get_employees_summary');
-        Route::get('get_employee_children', [\App\Http\Controllers\CP\ReportController::class, 'get_employee_children'])->name('reports.get_employee_children');
+        Route::get('get_employee_children/{user}', [\App\Http\Controllers\CP\ReportController::class, 'get_employee_children'])->name('reports.get_employee_children');
         Route::get('get_company_report', [\App\Http\Controllers\CP\ReportController::class, 'get_company_report'])->name('reports.get_company_report');
         Route::get('get_children_for_company/{company}',[\App\Http\Controllers\CP\ReportController::class, 'get_children_for_company'])->name('reports.get_children_for_company');
         Route::get('reports.get_report_by_projects',[\App\Http\Controllers\CP\ReportController::class, 'get_report_by_projects'])->name('reports.get_report_by_projects');

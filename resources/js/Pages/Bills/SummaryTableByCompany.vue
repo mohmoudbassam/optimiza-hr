@@ -1,10 +1,21 @@
 <template>
     <TreeTable :value="nodes" :lazy="true" :loading="loading" @nodeExpand="onExpand" class="p-treetable-lg">
         <Column field="company_name" header="company" :expander="true"></Column>
-        <Column field="project_name" header="project" ></Column>
-        <Column field="hours" header="hours" ></Column>
-        <Column field="percentage" header="percentage"></Column>
-        <Column field="paid" header="paid"></Column>
+        <Column field="project_name" header="project" >
+            <template #footer> Total: </template>
+        </Column>
+        <Column field="hours" header="hours" >
+            <template #footer> {{total_hours}} </template>
+        </Column>
+        <Column field="paid" header="paid">
+            <template #footer> {{totalSalary}} </template>
+        </Column>
+        <Column field="fees" header="fees">
+            <template #footer> {{total_fees}} </template>
+        </Column>
+        <Column field="total" header="total">
+            <template #footer> {{total_salary_with_fees}} </template>
+        </Column>
         <Column header="paid" headerStyle="width: 20rem">
             <template #body="slotProps">
                 <button @click="getUsers(slotProps.node)"   class="btn btn-primary mr-2">info</button>
@@ -25,14 +36,23 @@ export default {
         bill: Object,
     },
     mounted() {
-        axios.get(route('tasks.get_company_summary',{bill:this.bill.id })).then(response => {
-            this.nodes = response.data;
+        axios.get(route('tasks.get_company_summary',{bill:this.bill.id })).then(res => {
+            this.nodes = res.data;
+            this.nodes = res.data.data;
+            this.totalSalary = res.data.total_salary
+            this.total_fees = res.data.total_fees
+            this.total_salary_with_fees = res.data.total_salary_with_fees
+            this.total_hours = res.data.total_hours
         });
     },
     data() {
         return {
             nodes: [],
             loading: false,
+            totalSalary:0,
+            total_fees:0,
+            total_salary_with_fees:0,
+            total_hours:0,
         }
     },
     methods:{
@@ -63,7 +83,12 @@ export default {
 
         },
         getUsers(nodeId){
-            this.$emit('getUsersForCompany',nodeId.data.company_id);
+            if(nodeId.data.company_id){
+                this.$emit('getUsersForCompany',nodeId.data.company_id);
+            }else{
+                this.$emit('getUsersForProject',nodeId.data.project_id);
+            }
+
         }
     }
 }
