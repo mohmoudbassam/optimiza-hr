@@ -159,6 +159,106 @@
                         <!--end: Datatable-->
                     </div>
                 </div>
+
+
+                <div class="card card-custom mt-10">
+                    <div class="card-header flex-wrap border-0 pt-6 pb-0">
+                        <div class="card-title">
+                            <h3 class="card-label">Expenses
+                                <span class="text-muted pt-2 font-size-sm d-block"></span></h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <!--begin::Dropdown-->
+                            <div class="dropdown dropdown-inline mr-2">
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-body">
+                        <!--begin: Search Form-->
+                        <!--begin::Search Form-->
+                        <div class="mb-7">
+                            <div class="row align-items-center">
+                                <div
+                                    class="datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded"
+                                    id="kt_datatable" style="">
+                                    <table class="datatable-table" style="display: block;">
+                                        <thead class="datatable-head">
+                                        <tr class="datatable-row" style="left: 0px;">
+
+
+                                            <th data-field="OrderID"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 200px;">Title</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 200px;">Amount</span></th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody style="" class="datatable-body">
+                                        <tr v-for="expense in expenses" class="datatable-row" style="left: 0px;">
+
+                                            <td data-field="OrderID" class="datatable-cell text-center"><span
+                                                style="width: 200px;">{{ expense.main_expenses.name }}</span>
+                                            </td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 200px;">{{ expense.amount }}</span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                                <div
+                                    class="ml-30 datatable datatable-bordered datatable-head-custom datatable-default datatable-primary datatable-loaded"
+                                    id="kt_datatable" style="">
+                                    <table class="datatable-table border-1" style="display: block;">
+                                        <thead class="datatable-head">
+                                        <tr class="datatable-row" style="left: 0px;">
+
+
+                                            <th data-field="OrderID"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 100px;">Total Expenses</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 100px;">Total Paid</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 100px;">Total Salary with fees</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 100px;">Total</span></th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody style="" class="datatable-body">
+                                        <tr  class="datatable-row" style="left: 0px;">
+
+                                            <td data-field="OrderID" class="datatable-cell text-center"><span
+                                                style="width: 100px;">{{ total_expenses }}</span>
+                                            </td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 100px;">{{ total_paid }}</span></td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 100px;">{{ total_paid_with_fees }}</span></td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 100px;">{{ total_paid_with_fees_and_total_expenses }}</span></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
                 <!--end::Card-->
             </div>
             <!--end::Container-->
@@ -182,6 +282,7 @@ export default {
     props: {
         years: Array,
         months: Array,
+
     },
     mounted() {
 
@@ -189,13 +290,27 @@ export default {
     methods: {
         search(component) {
             this.view = component;
+            axios.get(route('reports.get_total_report', {month: this.month, year: this.year})).then(res => {
+                this.total_paid = res.data.total_paid
+                this.total_fees = res.data.total_fees
+                this.total_expenses = res.data.total_expenses
+                this.total_paid_with_fees_and_total_expenses = res.data.total_paid_with_fees_and_total_expenses,
+                this.total_paid_with_fees = res.data.total_paid_with_fees,
+                this.expenses = res.data.expenses
+            });
         }
     },
     data() {
         return {
             year: '',
             month: '',
-            view: ''
+            view: '',
+            total_paid:0,
+            total_expenses:0,
+            total_fees:0,
+            total_paid_with_fees:0,
+            total_paid_with_fees_and_total_expenses:0,
+            expenses: Array,
         }
     },
 

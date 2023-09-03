@@ -209,13 +209,15 @@ class BillsController extends Controller
         $total_expenses = $bill->expenses()->sum('amount');
         $total_fees = $total_paid * 0.025;
         $total_paid_with_fees = $total_paid + $total_fees;
+        $total_paid_with_fees_and_total_expenses = $total_paid_with_fees + $total_expenses;
         return inertia('Bills/Summary', [
             'bill' => $bill,
             'expenses' => $expenses,
-            'total_paid' => $total_paid,
-            'total_expenses' => $total_expenses,
-            'total_fees' => $total_fees,
-            'total_paid_with_fees' => $total_paid_with_fees,
+            'total_paid' => number_format($total_paid, 2),
+            'total_expenses' => number_format($total_expenses, 2),
+            'total_fees' =>  number_format($total_fees, 2),
+            'total_paid_with_fees' => number_format($total_paid_with_fees, 2),
+            'total_paid_with_fees_and_total_expenses' => number_format($total_paid_with_fees_and_total_expenses, 2)
         ]);
     }
 

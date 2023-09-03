@@ -190,13 +190,16 @@
 
                                             <th data-field="OrderID"
                                                 class="datatable-cell datatable-cell-sort text-center"><span
-                                                style="width: 200px;">Total Expenses</span></th>
+                                                style="width: 100px;">Total Expenses</span></th>
                                             <th data-field="Country"
                                                 class="datatable-cell datatable-cell-sort text-center"><span
-                                                style="width: 200px;">Total Paid</span></th>
+                                                style="width: 100px;">Total Paid</span></th>
                                             <th data-field="Country"
                                                 class="datatable-cell datatable-cell-sort text-center"><span
-                                                style="width: 200px;">Total Paid with fees</span></th>
+                                                style="width: 100px;">Total Salary with fees</span></th>
+                                            <th data-field="Country"
+                                                class="datatable-cell datatable-cell-sort text-center"><span
+                                                style="width: 100px;">Total</span></th>
 
                                         </tr>
                                         </thead>
@@ -204,12 +207,14 @@
                                         <tr  class="datatable-row" style="left: 0px;">
 
                                             <td data-field="OrderID" class="datatable-cell text-center"><span
-                                                style="width: 200px;">{{ total_expenses }}</span>
+                                                style="width: 100px;">{{ total_expenses }}</span>
                                             </td>
                                             <td data-field="Country" class="datatable-cell text-center"><span
-                                                style="width: 200px;">{{ total_paid }}</span></td>
+                                                style="width: 100px;">{{ total_paid }}</span></td>
                                             <td data-field="Country" class="datatable-cell text-center"><span
-                                                style="width: 200px;">{{ total_paid_with_fees }}</span></td>
+                                                style="width: 100px;">{{ total_paid_with_fees }}</span></td>
+                                            <td data-field="Country" class="datatable-cell text-center"><span
+                                                style="width: 100px;">{{ total_paid_with_fees_and_total_expenses }}</span></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -252,7 +257,7 @@
                             style="width: 100px;">fees</span></th>
                         <th data-field="Country"
                             class="datatable-cell datatable-cell-sort text-center"><span
-                            style="width: 100px;">paid with fees</span></th>
+                            style="width: 100px;">Salary with fees</span></th>
 
                     </tr>
                     </thead>
@@ -304,7 +309,8 @@ export default {
         total_paid:0,
         total_expenses:0,
         total_fees:0,
-        total_paid_with_fees:0
+        total_paid_with_fees:0,
+        total_paid_with_fees_and_total_expenses:0,
     },
     mounted() {
         this.view = 'user';

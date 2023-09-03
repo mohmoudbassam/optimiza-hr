@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CP;
 use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\Company;
+use App\Models\Expense;
 use App\Models\Project;
 use App\Models\Summary;
 use App\Models\User;
@@ -45,7 +46,7 @@ class ReportController extends Controller
 
 
         $total_salary = $tasks->sum('paid');
-        $total_fees= $total_salary * 0.025;
+        $total_fees = $total_salary * 0.025;
         $total_salary_with_fees = $total_salary + $total_fees;
 
         $taskAfterMap = $tasks->map(function ($task) {
@@ -111,7 +112,7 @@ class ReportController extends Controller
         });
 
         return response()->json(
-                $taskAfterMap
+            $taskAfterMap
         );
 
     }
@@ -146,8 +147,8 @@ class ReportController extends Controller
                     'paid' => $task->paid,
                     'company_id' => $task->company_id,
                     'company_name' => $task->company->name,
-                    'fess'=>number_format(($task->paid * 0.025), 2),
-                    'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
+                    'fess' => number_format(($task->paid * 0.025), 2),
+                    'total' => number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
                 'children' => [
                     []
@@ -157,9 +158,9 @@ class ReportController extends Controller
         return response()->json([
             'data' => $taskAfterMap,
             'total_salary' => number_format($total_salary, 2),
-                'total_fees' => number_format($total_fees, 2),
-                'total_salary_with_fees' => number_format($total_salary_with_fees, 2),
-                'total_hours' => number_format($total_hours, 2),
+            'total_fees' => number_format($total_fees, 2),
+            'total_salary_with_fees' => number_format($total_salary_with_fees, 2),
+            'total_hours' => number_format($total_hours, 2),
         ]);
     }
 
@@ -216,9 +217,9 @@ class ReportController extends Controller
             ->get();
 
         $total_salary = $summary->sum('paid');
-        $total_fees= $total_salary * 0.025;
+        $total_fees = $total_salary * 0.025;
         $total_salary_with_fees = $total_salary + $total_fees;
-        $total_hours= $summary->sum('hours');
+        $total_hours = $summary->sum('hours');
 
         $taskAfterMap = $summary->map(function ($task) {
             $company = Company::query()->where('id', $task->project->company_id)->first();
@@ -232,8 +233,8 @@ class ReportController extends Controller
                     'company_id' => $company->id,
                     'company_name' => $company->name,
                     'project_name' => $task->project->name,
-                    'fess'=>number_format(($task->paid * 0.025), 2),
-                    'total'=>number_format(($task->paid * 0.025) + $task->paid, 2)
+                    'fess' => number_format(($task->paid * 0.025), 2),
+                    'total' => number_format(($task->paid * 0.025) + $task->paid, 2)
                 ]),
                 'children' => [
                     []
@@ -284,6 +285,37 @@ class ReportController extends Controller
         return response()->json(
             $taskAfterMap
         );
+    }
+
+    public function get_total_report(Request $request)
+    {
+        $bill = Bill::query()
+            ->where('year', $request->year)
+            ->where('month', $request->month)
+            ->first();
+        $expenses= Expense::query()
+            ->with('mainExpenses')
+            ->where('bill_id', $bill->id)
+            ->get();
+
+
+        $total_paid = Summary::query()->where('bill_id', $bill->id)->sum('paid');
+        $total_expenses = $bill->expenses()->sum('amount');
+        $total_fees = $total_paid * 0.025;
+        $total_paid_with_fees = $total_paid + $total_fees;
+        $total_paid_with_fees_and_total_expenses = $total_paid_with_fees + $total_expenses;
+        return response()->json(
+            [
+                'total_paid' => number_format($total_paid, 2),
+                'total_expenses' => number_format($total_expenses, 2),
+                'total_fees' => number_format($total_fees, 2),
+                'total_paid_with_fees' => number_format($total_paid_with_fees, 2),
+                'total_paid_with_fees_and_total_expenses' => number_format($total_paid_with_fees_and_total_expenses, 2),
+                'expenses' => $expenses
+            ]
+        );
+
+
     }
 
 
