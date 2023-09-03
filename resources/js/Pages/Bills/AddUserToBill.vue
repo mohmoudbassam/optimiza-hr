@@ -64,7 +64,7 @@
                                 <div v-for="(task,index) in tasks">
                                     <Task :user="user" @deleteTask="deleteTask" :errors="errors" :key="index"
                                           :task_id="index" :index="index" @updateHours="updateHours"
-                                          @updatePercentage="updatePercentage" :task="task"
+                                          @changeAny="changeAny" :task="task"
                                           :projects="projects"></Task>
                                 </div>
 <!--                                total -->
@@ -129,9 +129,7 @@ export default {
         onChangeUser() {
             axios.get(route('bills.get_user_summary', {user: this.user_id, bill: this.bill.id})).then(response => {
                 this.tasks = response.data.tasks;
-                this.updatePercentage();
-                this.updateHours();
-                this.updateTotalPaid();
+                this.changeAny();
             });
             this.user = this.users.find(user => user.id === this.user_id);
             this.salary = this.user.salary;
@@ -140,10 +138,7 @@ export default {
         },
         deleteTask(index) {
             this.tasks.splice(index, 1);
-            this.updatePercentage();
-            this.updateHours();
-            this.updateTotalPaid();
-
+            this.changeAny();
         },
         submit() {
             this.$inertia.post(route('bills.store_summary', {bill: this.bill.id}), {
@@ -152,6 +147,11 @@ export default {
             })
         },
 
+        changeAny() {
+            this.updatePercentage();
+            this.updateHours();
+            this.updateTotalPaid();
+        },
 
         addTask() {
             this.tasks.push({
@@ -167,12 +167,10 @@ export default {
             total = this.tasks.reduce((total, task) => {
                 return total + parseFloat(task.percentage);
             }, 0);
-            this.updateTotalPaid();
             this.totalPercentage = total;
         },
         updateHours() {
             let total = 0;
-            this.updateTotalPaid();
             total = this.tasks.reduce((total, task) => {
                 return total + parseFloat(task.hours);
             }, 0);
@@ -180,12 +178,12 @@ export default {
             this.totalHours = total;
         },
         updateTotalPaid() {
-            let total = 0;
-            total = this.tasks.reduce((total, task) => {
+            let total_paid = 0;
+            total_paid = this.tasks.reduce((total, task) => {
                 return total + parseFloat(task.paid);
             }, 0);
 
-            this.totalPaid = total;
+            this.totalPaid = total_paid;
         },
     },
     watch: {

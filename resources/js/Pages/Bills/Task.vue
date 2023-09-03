@@ -151,12 +151,12 @@ export default {
         updatePercentage(e) {
             this.task.hours = ((this.task.percentage / 100) * this.user.monthly_working_hours).toFixed(2);
             this.task.paid = ((this.task.percentage / 100) * this.user.salary).toFixed(2);
-            this.$emit('updatePercentage');
+            this.$emit('changeAny');
         },
         updateHours(e) {
             this.task.percentage = ((this.task.hours / this.user.monthly_working_hours) * 100).toFixed(2);
             this.task.paid = ((this.task.percentage / 100) * this.user.salary).toFixed(2);
-            this.$emit('updateHours');
+            this.$emit('changeAny');
         },
 
     }
