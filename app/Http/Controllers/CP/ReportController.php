@@ -101,8 +101,8 @@ class ReportController extends Controller
                 'styleClass' => 'table-primary',
                 'data' => collect([
                     'user' => $user->name,
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
+                    'hours' => number_format($task->hours, 2),
+                    'percentage' => number_format(floor($task->percentage, 2)),
                     'paid' => number_format($task->paid, 2),
                     'project' => $task->project->name,
                     'fees' => number_format(($task->paid * 0.025), 2),
@@ -143,7 +143,7 @@ class ReportController extends Controller
                 'data' => collect([
                     'id' => $task->id,
                     'hours' => $task->hours,
-                    'percentage' => $task->percentage,
+                    'percentage' => number_format(floor($task->percentage),2),
                     'paid' => number_format($task->paid, 2),
                     'company_id' => $task->company_id,
                     'company_name' => $task->company->name,
@@ -186,8 +186,8 @@ class ReportController extends Controller
                 'key' => $company->id,
                 'styleClass' => 'table-primary',
                 'data' => collect([
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
+                    'hours' => number_format($task->hours, 2),
+                    'percentage' => number_format(floor($task->percentage),2),
                     'paid' => number_format($task->paid, 2),
                     'project_id' => $task->project_id,
                     'project_name' => $task->project->name,
@@ -227,8 +227,8 @@ class ReportController extends Controller
                 'key' => $task->project->id,
                 'data' => collect([
                     'id' => $task->id,
-                    'hours' => $task->hours,
-                    'percentage' => $task->percentage,
+                    'hours' => number_format($task->hours, 2),
+                    'percentage' => number_format(floor($task->percentage),2),
                     'paid' => number_format($task->paid, 2),
                     'company_id' => $company->id,
                     'company_name' => $company->name,
@@ -273,7 +273,7 @@ class ReportController extends Controller
                 'key' => $project->id,
                 'styleClass' => 'table-primary',
                 'data' => collect([
-                    'hours' => $task->hours,
+                    'hours' => number_format($task->hours, 2),
                     'percentage' => number_format($task->percentage, 2),
                     'paid' =>number_format( $task->paid, 2),
                     'user_id' => $task->user_id,
